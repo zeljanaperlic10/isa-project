@@ -1,0 +1,202 @@
+/* GLAVNI KONTEJNER - cela stranica */
+.home-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* ============================================
+   NAVBAR - Gornja navigacija
+   ============================================ */
+
+.navbar {
+  /* Layout - flexbox za pozicioniranje */
+  display: flex;
+  justify-content: space-between; /* Logo levo, meni desno */
+  align-items: center;
+  
+  /* Stilizacija */
+  background: white;
+  padding: 16px 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  /* Fiksiran na vrhu */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Logo deo (levo u navbar-u) */
+.navbar-brand h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+  font-weight: 700;
+}
+
+/* Meni deo (desno u navbar-u) */
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* Razmak između elemenata */
+}
+
+/* ============================================
+   AUTH BUTTONS - Za neprijavljene korisnike
+   ============================================ */
+
+.auth-buttons {
+  display: flex;
+  gap: 12px; /* Razmak između dugmadi */
+}
+
+/* ============================================
+   USER MENU - Za prijavljene korisnike
+   ============================================ */
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Welcome poruka (Dobrodošao, username!) */
+.welcome-text {
+  color: #555;
+  font-size: 15px;
+}
+
+.welcome-text strong {
+  color: #667eea; /* Plava boja za username */
+  font-weight: 600;
+}
+
+/* ============================================
+   DUGMAD - Svi stilovi za buttons
+   ============================================ */
+
+.btn {
+  /* Osnovna stilizacija */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  /* Pointer cursor */
+  outline: none;
+}
+
+/* Primary dugme (Registracija) - puna pozadina */
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Outline dugme (Prijava) - samo border */
+.btn-outline {
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.btn-outline:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* Logout dugme - crvenkasto */
+.btn-logout {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-logout:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+/* ============================================
+   MAIN CONTENT - Glavni sadržaj ispod navbar-a
+   ============================================ */
+
+.main-content {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto; /* Centriranje */
+}
+
+/* Placeholder tekst (privremeno, dok ne dodamo objave) */
+.placeholder {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.placeholder h2 {
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.placeholder p {
+  color: #666;
+  font-size: 16px;
+}
+
+/* ============================================
+   RESPONSIVE - Za manje ekrane (mobile)
+   ============================================ */
+
+@media (max-width: 768px) {
+  
+  /* Navbar postaje uži */
+  .navbar {
+    padding: 12px 20px;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  /* Logo centriran */
+  .navbar-brand h1 {
+    font-size: 20px;
+  }
+  
+  /* Dugmad manja */
+  .btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  
+  /* Welcome tekst manji */
+  .welcome-text {
+    font-size: 13px;
+  }
+  
+  /* Main content manji padding */
+  .main-content {
+    padding: 20px 12px;
+  }
+  
+  /* Placeholder manji */
+  .placeholder {
+    padding: 40px 16px;
+  }
+  
+  .placeholder h2 {
+    font-size: 22px;
+  }
+  
+  .placeholder p {
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,25 @@
+# Backend - Spring Boot 
+backend/target/ 
+backend/.mvn/ 
+backend/mvnw 
+backend/mvnw.cmd 
+backend/.idea/ 
+backend/*.iml 
+backend/uploads/ 
+backend/.classpath 
+backend/.project 
+backend/.settings/ 
+backend/bin/ 
+ 
+# Frontend - Angular 
+frontend/node_modules/ 
+frontend/dist/ 
+frontend/.angular/ 
+frontend/.vscode/ 
+ 
+# OS files 
+.DS_Store 
+Thumbs.db 
+ 
+# Environment 
+*.env 

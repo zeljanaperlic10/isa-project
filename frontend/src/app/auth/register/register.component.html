@@ -1,0 +1,139 @@
+<div class="register-container">
+  <div class="register-card">
+    <h2>Registracija</h2>
+    
+    <!-- Success poruka -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+    
+    <!-- Error poruka -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Username -->
+      <div class="form-group">
+        <label for="username">Korisničko ime *</label>
+        <input 
+          type="text" 
+          id="username" 
+          formControlName="username"
+          [class.invalid]="f['username'].invalid && f['username'].touched"
+          placeholder="Unesite korisničko ime">
+        <div *ngIf="f['username'].invalid && f['username'].touched" class="error-text">
+          <span *ngIf="f['username'].errors?.['required']">Korisničko ime je obavezno</span>
+          <span *ngIf="f['username'].errors?.['minlength']">Minimum 3 karaktera</span>
+          <span *ngIf="f['username'].errors?.['maxlength']">Maksimum 20 karaktera</span>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email adresa *</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          [class.invalid]="f['email'].invalid && f['email'].touched"
+          placeholder="Unesite email">
+        <div *ngIf="f['email'].invalid && f['email'].touched" class="error-text">
+          <span *ngIf="f['email'].errors?.['required']">Email je obavezan</span>
+          <span *ngIf="f['email'].errors?.['email']">Unesite validan email</span>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">Lozinka *</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password"
+          class="password-input"
+          [class.invalid]="f['password'].invalid && f['password'].touched"
+          placeholder="Unesite lozinku">
+        <div *ngIf="f['password'].invalid && f['password'].touched" class="error-text">
+          <span *ngIf="f['password'].errors?.['required']">Lozinka je obavezna</span>
+          <span *ngIf="f['password'].errors?.['minlength']">Minimum 8 karaktera</span>
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <label for="confirmPassword">Potvrdite lozinku *</label>
+        <input 
+          type="password" 
+          id="confirmPassword" 
+          formControlName="confirmPassword"
+          class="password-input"
+          [class.invalid]="f['confirmPassword'].invalid && f['confirmPassword'].touched"
+          placeholder="Potvrdite lozinku">
+        <div *ngIf="f['confirmPassword'].invalid && f['confirmPassword'].touched" class="error-text">
+          <span *ngIf="f['confirmPassword'].errors?.['required']">Potvrda lozinke je obavezna</span>
+        </div>
+      </div>
+
+      <!-- First Name -->
+      <div class="form-group">
+        <label for="firstName">Ime *</label>
+        <input 
+          type="text" 
+          id="firstName" 
+          formControlName="firstName"
+          [class.invalid]="f['firstName'].invalid && f['firstName'].touched"
+          placeholder="Unesite ime">
+        <div *ngIf="f['firstName'].invalid && f['firstName'].touched" class="error-text">
+          <span *ngIf="f['firstName'].errors?.['required']">Ime je obavezno</span>
+          <span *ngIf="f['firstName'].errors?.['minlength']">Minimum 2 karaktera</span>
+        </div>
+      </div>
+
+      <!-- Last Name -->
+      <div class="form-group">
+        <label for="lastName">Prezime *</label>
+        <input 
+          type="text" 
+          id="lastName" 
+          formControlName="lastName"
+          [class.invalid]="f['lastName'].invalid && f['lastName'].touched"
+          placeholder="Unesite prezime">
+        <div *ngIf="f['lastName'].invalid && f['lastName'].touched" class="error-text">
+          <span *ngIf="f['lastName'].errors?.['required']">Prezime je obavezno</span>
+          <span *ngIf="f['lastName'].errors?.['minlength']">Minimum 2 karaktera</span>
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="form-group">
+        <label for="address">Adresa *</label>
+        <input 
+          type="text" 
+          id="address" 
+          formControlName="address"
+          [class.invalid]="f['address'].invalid && f['address'].touched"
+          placeholder="Unesite adresu">
+        <div *ngIf="f['address'].invalid && f['address'].touched" class="error-text">
+          <span *ngIf="f['address'].errors?.['required']">Adresa je obavezna</span>
+          <span *ngIf="f['address'].errors?.['minlength']">Minimum 5 karaktera</span>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        type="submit" 
+        class="btn-submit" 
+        [disabled]="loading || registerForm.invalid">
+        <span *ngIf="!loading">Registruj se</span>
+        <span *ngIf="loading">Registracija u toku...</span>
+      </button>
+
+      <!-- Link za login -->
+      <div class="login-link">
+        Već imate nalog? <a routerLink="/login">Prijavite se</a>
+      </div>
+    </form>
+  </div>
+</div>

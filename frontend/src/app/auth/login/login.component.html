@@ -1,0 +1,59 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Prijava</h2>
+    
+    <!-- Error poruka -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email adresa *</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          [class.invalid]="f['email'].invalid && f['email'].touched"
+          placeholder="Unesite email"
+          autocomplete="email">
+        <div *ngIf="f['email'].invalid && f['email'].touched" class="error-text">
+          <span *ngIf="f['email'].errors?.['required']">Email je obavezan</span>
+          <span *ngIf="f['email'].errors?.['email']">Unesite validan email</span>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">Lozinka *</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password"
+          class="password-input"
+          [class.invalid]="f['password'].invalid && f['password'].touched"
+          placeholder="Unesite lozinku"
+          autocomplete="current-password">
+        <div *ngIf="f['password'].invalid && f['password'].touched" class="error-text">
+          <span *ngIf="f['password'].errors?.['required']">Lozinka je obavezna</span>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        type="submit" 
+        class="btn-submit" 
+        [disabled]="loading || loginForm.invalid">
+        <span *ngIf="!loading">Prijavite se</span>
+        <span *ngIf="loading">Prijava u toku...</span>
+      </button>
+
+      <!-- Link za registraciju -->
+      <div class="register-link">
+        Nemate nalog? <a routerLink="/register">Registrujte se</a>
+      </div>
+    </form>
+  </div>
+</div>
