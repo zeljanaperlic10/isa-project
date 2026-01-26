@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     public SecurityConfig() {
-        System.out.println("🔥🔥🔥 SECURITY CONFIG SE UCITAVA! 🔥🔥🔥");
+        System.out.println("🔥🔥🔥 SECURITY CONFIG SE UČITAVA! 🔥🔥🔥");
     }
 
     @Bean
@@ -45,12 +45,38 @@ public class SecurityConfig {
                 cors.configurationSource(corsConfigurationSource());
             })
             
-            // Autorizacija zahteva
+            // Autorizacija zahteva - AŽURIRANO za 3.1 i 3.3
             .authorizeHttpRequests(auth -> {
                 System.out.println("📋 Konfigurisem authorization rules...");
-                System.out.println("✅ Javni endpoint-i: /auth/register, /auth/login, /auth/activate, /auth/test");
+                
+                // ============================================
+                // JAVNO DOSTUPNO (3.1 zahtev)
+                // ============================================
+                System.out.println("✅ Javni endpoint-i:");
+                System.out.println("   - /auth/** (registracija, login, aktivacija)");
+                System.out.println("   - GET /api/posts/** (prikaz postova - 3.1)");
+                System.out.println("   - GET /api/videos/** (streaming videa - 3.1)");
+                System.out.println("   - GET /api/thumbnails/** (thumbnail slike - 3.1)");
+                
                 auth
-                    .requestMatchers("/auth/register", "/auth/login", "/auth/activate", "/auth/test").permitAll()
+                    // Auth endpoint-i (registracija, login, aktivacija)
+                    .requestMatchers("/auth/**").permitAll()
+                    
+                    // Postovi - GET je javno (3.1 zahtev - neautentifikovani mogu videti)
+                    .requestMatchers("GET", "/api/posts/**").permitAll()
+                    
+                    // Video streaming - javno dostupno (3.1)
+                    .requestMatchers("GET", "/api/videos/**").permitAll()
+                    
+                    // Thumbnail slike - javno dostupno (3.1)
+                    .requestMatchers("GET", "/api/thumbnails/**").permitAll()
+                    
+                    // ============================================
+                    // ZAHTEVA AUTENTIFIKACIJU (3.3 zahtev)
+                    // ============================================
+                    // POST /api/posts - kreiranje posta (samo registrovani)
+                    // DELETE /api/posts/** - brisanje posta (samo registrovani)
+                    // Sve ostalo
                     .anyRequest().authenticated();
             })
             

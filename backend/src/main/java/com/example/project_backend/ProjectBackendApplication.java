@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     "controller",
     "service",
     "model",
+    "config",
     "repository",
     "dto"
 })
