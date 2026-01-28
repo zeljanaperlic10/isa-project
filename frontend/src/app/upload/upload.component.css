@@ -269,13 +269,6 @@
 .username {
   font-weight: 600;
   color: #667eea;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.username:hover {
-  color: #5568d3;
-  text-decoration: underline;
 }
 
 .separator {

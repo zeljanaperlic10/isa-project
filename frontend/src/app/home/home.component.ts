@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import { User } from '../models/user.model';
+import { PostService } from '../services/post.service';
+import { Post } from '../models/post.model';
 
 @Component({
   selector: 'app-home',
@@ -10,52 +11,105 @@ import { User } from '../models/user.model';
 })
 export class HomeComponent implements OnInit {
 
-  // Trenutno prijavljeni korisnik (null ako nije prijavljen)
-  currentUser: User | null = null;
+  // ============================================
+  // AUTHENTICATION
+  // ============================================
+  isLoggedIn: boolean = false;
+  currentUser: any = null;
 
-  // Da li je korisnik prijavljen
-  isLoggedIn = false;
+  // ============================================
+  // POSTS
+  // ============================================
+  posts: Post[] = [];
+  loading: boolean = true;
+  error: string = '';
 
   constructor(
     private authService: AuthService,
+    private postService: PostService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    // KORAK 1: Provera da li je korisnik prijavljen
+    // Provera autentifikacije
+    this.checkAuthentication();
+
+    // Učitavanje postova
+    this.loadPosts();
+  }
+
+  // ============================================
+  // AUTHENTICATION METHODS
+  // ============================================
+
+  checkAuthentication(): void {
     this.isLoggedIn = this.authService.isLoggedIn();
-    
-    // KORAK 2: Dobijanje trenutnog korisnika (ako je prijavljen)
     if (this.isLoggedIn) {
       this.currentUser = this.authService.currentUserValue;
-      console.log('✅ Prijavljen korisnik:', this.currentUser?.username);
-    } else {
-      console.log('👤 Korisnik nije prijavljen');
     }
   }
 
-  // Navigacija ka Login stranici
+  logout(): void {
+    this.authService.logout();
+    this.isLoggedIn = false;
+    this.currentUser = null;
+    this.router.navigate(['/login']);
+  }
+
   goToLogin(): void {
     this.router.navigate(['/login']);
   }
 
-  // Navigacija ka Register stranici
   goToRegister(): void {
     this.router.navigate(['/register']);
   }
 
-  // Logout korisnika
-  logout(): void {
-    // KORAK 1: Pozovi AuthService.logout() koji briše token i korisnika
-    this.authService.logout();
-    
-    // KORAK 2: Postavi lokalne promenljive na null/false
-    this.currentUser = null;
-    this.isLoggedIn = false;
-    
-    // KORAK 3: Redirect na login stranicu
-    this.router.navigate(['/login']);
-    
-    console.log('🚪 Korisnik se odjavio');
+  goToUpload(): void {
+    this.router.navigate(['/upload']);
+  }
+
+  goToProfile(username: string): void {
+    this.router.navigate(['/profile', username]);
+  }
+
+  // ============================================
+  // POST METHODS
+  // ============================================
+
+  loadPosts(): void {
+    this.loading = true;
+    this.error = '';
+
+    this.postService.getAllPosts().subscribe({
+      next: (posts) => {
+        console.log('✅ Postovi učitani:', posts);
+        this.posts = posts;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('❌ Greška pri učitavanju postova:', err);
+        this.error = 'Greška pri učitavanju postova. Pokušajte ponovo.';
+        this.loading = false;
+      }
+    });
+  }
+
+  /**
+   * Otvara video player stranicu
+   */
+  openVideo(postId: number): void {
+    this.router.navigate(['/video', postId]);
+  }
+
+  /**
+   * Helper metoda - vraća thumbnail URL
+   */
+  getThumbnailUrl(post: Post): string {
+    // Ako je YouTube link - koristi direktno
+    if (post.thumbnailUrl.startsWith('http')) {
+      return post.thumbnailUrl;
+    }
+    // Ako je lokalni fajl - konstruiši URL
+    return `http://localhost:9090${post.thumbnailUrl}`;
   }
 }

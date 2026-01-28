@@ -1,0 +1,202 @@
+<!-- ============================================ -->
+<!-- UPLOAD CONTAINER -->
+<!-- ============================================ -->
+<div class="upload-container">
+  
+  <!-- HEADER -->
+  <div class="upload-header">
+    <h1>🎬 Postavite Video</h1>
+    <p>Podelite svoj video sa svetom!</p>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SUCCESS MESSAGE -->
+  <!-- ============================================ -->
+  <div *ngIf="success" class="success-message">
+    <h2>✅ Video uspešno postavljen!</h2>
+    <p>Preusmeravamo vas na video...</p>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- UPLOAD FORM -->
+  <!-- ============================================ -->
+  <form *ngIf="!success" (ngSubmit)="onSubmit()" class="upload-form">
+
+    <!-- ERROR MESSAGE -->
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VIDEO UPLOAD (obavezno - 3.3) -->
+    <!-- ============================================ -->
+    <div class="form-section">
+      <label class="section-title">📹 Video (MP4, max 200MB) *</label>
+      
+      <div class="file-input-wrapper">
+        <input 
+          type="file" 
+          id="video-input"
+          accept="video/mp4"
+          (change)="onVideoSelect($event)"
+          [disabled]="uploading">
+        
+        <label for="video-input" class="file-input-label" [class.disabled]="uploading">
+          <span class="icon">📁</span>
+          <span *ngIf="!videoFile">Odaberite video fajl</span>
+          <span *ngIf="videoFile">{{ videoFile.name }} ({{ formatFileSize(videoFile.size) }})</span>
+        </label>
+      </div>
+
+      <!-- Video Error -->
+      <div *ngIf="videoError" class="input-error">{{ videoError }}</div>
+
+      <!-- Video Preview -->
+      <div *ngIf="videoPreviewUrl && !videoError" class="video-preview">
+        <video [src]="videoPreviewUrl" controls></video>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- THUMBNAIL UPLOAD (obavezno - 3.3) -->
+    <!-- ============================================ -->
+    <div class="form-section">
+      <label class="section-title">🖼️ Thumbnail Slika (max 5MB) *</label>
+      
+      <div class="file-input-wrapper">
+        <input 
+          type="file" 
+          id="thumbnail-input"
+          accept="image/*"
+          (change)="onThumbnailSelect($event)"
+          [disabled]="uploading">
+        
+        <label for="thumbnail-input" class="file-input-label" [class.disabled]="uploading">
+          <span class="icon">🖼️</span>
+          <span *ngIf="!thumbnailFile">Odaberite thumbnail sliku</span>
+          <span *ngIf="thumbnailFile">{{ thumbnailFile.name }}</span>
+        </label>
+      </div>
+
+      <!-- Thumbnail Error -->
+      <div *ngIf="thumbnailError" class="input-error">{{ thumbnailError }}</div>
+
+      <!-- Thumbnail Preview -->
+      <div *ngIf="thumbnailPreviewUrl && !thumbnailError" class="thumbnail-preview">
+        <img [src]="thumbnailPreviewUrl" alt="Thumbnail preview">
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- NASLOV (obavezno - 3.3) -->
+    <!-- ============================================ -->
+    <div class="form-section">
+      <label class="section-title">📝 Naslov (max 200 karaktera) *</label>
+      <input 
+        type="text" 
+        [(ngModel)]="title"
+        name="title"
+        placeholder="Unesite naslov videa..."
+        maxlength="200"
+        [disabled]="uploading"
+        class="text-input">
+      <div class="char-count">{{ title.length }}/200</div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- OPIS (opciono - 3.3) -->
+    <!-- ============================================ -->
+    <div class="form-section">
+      <label class="section-title">📄 Opis</label>
+      <textarea 
+        [(ngModel)]="description"
+        name="description"
+        placeholder="Opišite svoj video..."
+        rows="5"
+        maxlength="1000"
+        [disabled]="uploading"
+        class="text-input"></textarea>
+      <div class="char-count">{{ description.length }}/1000</div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- TAGOVI (3.3 zahtev) -->
+    <!-- ============================================ -->
+    <div class="form-section">
+      <label class="section-title">🏷️ Tagovi</label>
+      <input 
+        type="text" 
+        [(ngModel)]="tagsInput"
+        name="tags"
+        placeholder="programiranje, python, tutorial (odvojeno zarezima)"
+        [disabled]="uploading"
+        class="text-input">
+      <div class="hint">Primer: programiranje, python, tutorial</div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- GEOLOKACIJA (opciono - 3.3) -->
+    <!-- ============================================ -->
+    <div class="form-section">
+      <label class="section-title">📍 Lokacija (opciono)</label>
+      
+      <div class="location-row">
+        <input 
+          type="text" 
+          [(ngModel)]="locationName"
+          name="locationName"
+          placeholder="Beograd, Srbija"
+          [disabled]="uploading"
+          class="text-input">
+        
+        <button 
+          type="button" 
+          class="btn-location"
+          (click)="getCurrentLocation()"
+          [disabled]="uploading">
+          📍 Koristi GPS
+        </button>
+      </div>
+
+      <!-- Koordinate (read-only) -->
+      <div *ngIf="latitude && longitude" class="coordinates">
+        <small>Lat: {{ latitude }}, Lng: {{ longitude }}</small>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SUBMIT BUTTONS (3.3 zahtev - dugme #ff4d4f sa 🎥) -->
+    <!-- ============================================ -->
+    <div class="form-actions">
+      
+      <!-- CANCEL -->
+      <button 
+        type="button" 
+        class="btn-cancel"
+        (click)="cancel()"
+        [disabled]="uploading">
+        Odustani
+      </button>
+
+      <!-- UPLOAD (crveno dugme sa movie camera emoji - 3.3 zahtev) -->
+      <button 
+        type="submit" 
+        class="btn-upload"
+        [disabled]="uploading">
+        <span *ngIf="!uploading">🎥 Postavi Video</span>
+        <span *ngIf="uploading">⏳ Upload u toku...</span>
+      </button>
+
+    </div>
+
+    <!-- Upload Progress -->
+    <div *ngIf="uploading" class="upload-progress">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+      </div>
+      <p class="progress-text">Molimo sačekajte... Ne zatvarajte stranicu.</p>
+    </div>
+
+  </form>
+
+</div>

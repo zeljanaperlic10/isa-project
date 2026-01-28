@@ -8,6 +8,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -18,7 +19,10 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    public SecurityConfig() {
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         System.out.println("🔥🔥🔥 SECURITY CONFIG SE UČITAVA! 🔥🔥🔥");
     }
 
@@ -57,6 +61,7 @@ public class SecurityConfig {
                 System.out.println("   - GET /api/posts/** (prikaz postova - 3.1)");
                 System.out.println("   - GET /api/videos/** (streaming videa - 3.1)");
                 System.out.println("   - GET /api/thumbnails/** (thumbnail slike - 3.1)");
+                System.out.println("   - GET /api/users/** (profil korisnika - 3.1)");
                 
                 auth
                     // Auth endpoint-i (registracija, login, aktivacija)
@@ -71,6 +76,9 @@ public class SecurityConfig {
                     // Thumbnail slike - javno dostupno (3.1)
                     .requestMatchers("GET", "/api/thumbnails/**").permitAll()
                     
+                    // Korisnici - GET je javno (3.1 zahtev - profil stranica)
+                    .requestMatchers("GET", "/api/users/**").permitAll()
+                    
                     // ============================================
                     // ZAHTEVA AUTENTIFIKACIJU (3.3 zahtev)
                     // ============================================
@@ -84,7 +92,10 @@ public class SecurityConfig {
             .sessionManagement(session -> {
                 System.out.println("🔓 Stateless session policy!");
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-            });
+            })
+            
+            // Dodavanje JWT Authentication Filter-a
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         System.out.println("✅✅✅ Security filter chain BUILD završen! ✅✅✅");
         return http.build();

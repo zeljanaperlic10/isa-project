@@ -1,48 +1,122 @@
-<div class="home-container">
-  
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    
+<!-- ============================================ -->
+<!-- NAVBAR -->
+<!-- ============================================ -->
+<nav class="navbar">
+  <div class="container">
     <!-- Logo -->
-    <div class="navbar-brand">
-      <h1>📹 Video App</h1>
+    <div class="logo">
+      <h1>🎬 VideoApp</h1>
     </div>
 
-    <!-- Desna strana navbar-a - USLOVNI PRIKAZ -->
-    <div class="navbar-menu">
+    <!-- Navigation -->
+    <div class="nav-links">
+      <!-- Ako NIJE prijavljen -->
+      <ng-container *ngIf="!isLoggedIn">
+        <button class="btn-secondary" (click)="goToLogin()">Prijava</button>
+        <button class="btn-primary" (click)="goToRegister()">Registracija</button>
+      </ng-container>
+
+      <!-- Ako JESTE prijavljen -->
+      <ng-container *ngIf="isLoggedIn && currentUser">
+        <!-- Upload dugme (3.3 zahtev - samo za prijavljene) -->
+        <button class="btn-upload" (click)="goToUpload()">🎥 Postavite Video</button>
+        
+        <span class="welcome-text">Dobrodošao, {{ currentUser.username }}!</span>
+        <button class="btn-secondary" (click)="logout()">Odjavi se</button>
+      </ng-container>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================ -->
+<!-- MAIN CONTENT -->
+<!-- ============================================ -->
+<div class="main-content">
+  <div class="container">
+
+    <!-- LOADING -->
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Učitavanje postova...</p>
+    </div>
+
+    <!-- ERROR -->
+    <div *ngIf="error && !loading" class="error-message">
+      <p>{{ error }}</p>
+      <button class="btn-primary" (click)="loadPosts()">Pokušaj ponovo</button>
+    </div>
+
+    <!-- POSTS GRID -->
+    <div *ngIf="!loading && !error && posts.length > 0" class="posts-grid">
       
-      <!-- Ako NIJE prijavljen - prikaži Login i Register dugmad -->
-      <div *ngIf="!isLoggedIn" class="auth-buttons">
-        <button class="btn btn-outline" (click)="goToLogin()">
-          Prijava
-        </button>
-        <button class="btn btn-primary" (click)="goToRegister()">
-          Registracija
-        </button>
-      </div>
+      <!-- JEDAN POST -->
+      <div 
+        *ngFor="let post of posts" 
+        class="post-card"
+        (click)="openVideo(post.id)">
+        
+        <!-- Thumbnail sa crvenim border-om i tačkom (3.1 zahtev) -->
+        <div class="thumbnail-container">
+          <img 
+            [src]="getThumbnailUrl(post)" 
+            [alt]="post.title"
+            class="thumbnail">
+          
+          <!-- Crvena tačka u gornjem desnom uglu (video indikator) -->
+          <div class="video-indicator"></div>
+        </div>
 
-      <!-- Ako JESTE prijavljen - prikaži username i Logout -->
-      <div *ngIf="isLoggedIn" class="user-menu">
-        <span class="welcome-text">
-          👤 Dobrodošao, <strong>{{ currentUser?.username }}</strong>!
-        </span>
-        <button class="btn btn-logout" (click)="logout()">
-          Odjavi se
-        </button>
+        <!-- Post Info -->
+        <div class="post-info">
+          <!-- Naslov -->
+          <h3 class="post-title">{{ post.title }}</h3>
+
+          <!-- Korisnik i vreme -->
+          <div class="post-meta">
+            <span class="username" (click)="goToProfile(post.user.username); $event.stopPropagation()">
+              {{ post.user.username }}
+            </span>
+            <span class="separator">•</span>
+            <span class="date">{{ post.createdAt | date:'short' }}</span>
+          </div>
+
+          <!-- Tagovi -->
+          <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
+            <span class="tag" *ngFor="let tag of post.tags">
+              #{{ tag }}
+            </span>
+          </div>
+
+          <!-- Statistika -->
+          <div class="post-stats">
+            <span class="stat">
+              <span class="icon">👁️</span> {{ post.viewsCount }}
+            </span>
+            <span class="stat">
+              <span class="icon">❤️</span> {{ post.likesCount }}
+            </span>
+            <span class="stat">
+              <span class="icon">💬</span> {{ post.commentsCount }}
+            </span>
+          </div>
+
+          <!-- Lokacija (ako postoji) -->
+          <div class="post-location" *ngIf="post.locationName">
+            <span class="icon">📍</span>
+            <span>{{ post.locationName }}</span>
+          </div>
+        </div>
+
       </div>
+      <!-- Kraj jednog posta -->
 
     </div>
-  </nav>
+    <!-- Kraj posts-grid -->
 
-  <!-- GLAVNI SADRŽAJ -->
-  <main class="main-content">
-    
-    <!-- Placeholder tekst (kasnije će ovde biti objave) -->
-    <div class="placeholder">
-      <h2>🎬 Ovde će biti objave korisnika</h2>
-      <p>Uskoro: lista video objava, komentari, lajkovi...</p>
+    <!-- EMPTY STATE -->
+    <div *ngIf="!loading && !error && posts.length === 0" class="empty-state">
+      <p>😔 Nema postova za prikaz</p>
     </div>
 
-  </main>
-
+  </div>
 </div>

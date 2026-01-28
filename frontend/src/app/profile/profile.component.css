@@ -1,0 +1,378 @@
+/* ============================================ */
+/* LOADING & ERROR */
+/* ============================================ */
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 2rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container h2 {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+/* ============================================ */
+/* PROFILE CONTAINER */
+/* ============================================ */
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+  min-height: 100vh;
+}
+
+/* ============================================ */
+/* BACK BUTTON */
+/* ============================================ */
+.back-button {
+  margin-bottom: 1.5rem;
+}
+
+.back-button button {
+  background: white;
+  border: 2px solid #ddd;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-button button:hover {
+  background: #f5f5f5;
+  border-color: #999;
+  transform: translateX(-5px);
+}
+
+/* ============================================ */
+/* USER CARD */
+/* ============================================ */
+.user-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Avatar */
+.user-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+/* User Details */
+.user-details {
+  flex: 1;
+}
+
+.username {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 1rem 0;
+}
+
+.user-meta p {
+  margin: 0.5rem 0;
+  color: #666;
+  font-size: 1rem;
+}
+
+.user-meta .icon {
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Statistics */
+.user-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat-box {
+  text-align: center;
+  padding: 1rem;
+  background: #f8f9ff;
+  border-radius: 12px;
+  min-width: 100px;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 0.3rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 600;
+}
+
+/* ============================================ */
+/* POSTS SECTION */
+/* ============================================ */
+.posts-section {
+  margin-top: 2rem;
+}
+
+.posts-section h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+/* ============================================ */
+/* POSTS GRID */
+/* ============================================ */
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ============================================ */
+/* POST CARD */
+/* ============================================ */
+.post-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================ */
+/* THUMBNAIL (Crveni border - 3.1 zahtev) */
+/* ============================================ */
+.thumbnail-container {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 aspect ratio */
+  overflow: hidden;
+  border: 4px solid #ff4d4f; /* CRVENI BORDER - 3.1 ZAHTEV */
+  border-radius: 12px 12px 0 0;
+}
+
+.thumbnail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.post-card:hover .thumbnail {
+  transform: scale(1.05);
+}
+
+/* ============================================ */
+/* VIDEO INDICATOR (Crvena tačka - 3.1 zahtev) */
+/* ============================================ */
+.video-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  background-color: #ff4d4f; /* CRVENA BOJA - 3.1 ZAHTEV */
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 77, 79, 0.1);
+  }
+}
+
+/* ============================================ */
+/* POST INFO */
+/* ============================================ */
+.post-info {
+  padding: 1.2rem;
+}
+
+.post-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.8rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.date {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* ============================================ */
+/* TAGOVI */
+/* ============================================ */
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: transform 0.2s ease;
+}
+
+.tag:hover {
+  transform: scale(1.05);
+}
+
+/* ============================================ */
+/* POST STATS */
+/* ============================================ */
+.post-stats {
+  display: flex;
+  gap: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.post-stats .stat {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.post-stats .icon {
+  font-size: 1rem;
+}
+
+/* ============================================ */
+/* EMPTY STATE */
+/* ============================================ */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #999;
+  font-size: 1.2rem;
+}
+
+/* ============================================ */
+/* BUTTONS */
+/* ============================================ */
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* ============================================ */
+/* RESPONSIVE */
+/* ============================================ */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 1rem;
+  }
+
+  .user-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .user-avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+
+  .username {
+    font-size: 1.5rem;
+  }
+
+  .user-stats {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .posts-grid {
+    grid-template-columns: 1fr;
+  }
+}

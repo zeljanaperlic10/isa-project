@@ -60,12 +60,13 @@ public class PostService {
             // KORAK 1: Pronalaženje korisnika
             // ============================================
             
-            Optional<User> userOpt = userRepository.findByUsername(username);
+            // NAPOMENA: username parametar zapravo sadrži EMAIL (zbog JWT tokena)
+            Optional<User> userOpt = userRepository.findByEmail(username);
             if (!userOpt.isPresent()) {
                 throw new RuntimeException("Korisnik nije pronađen: " + username);
             }
             User user = userOpt.get();
-            System.out.println("✅ Korisnik pronađen: " + username);
+            System.out.println("✅ Korisnik pronađen: " + user.getUsername() + " (email: " + username + ")");
 
             // ============================================
             // KORAK 2: Validacija naslova (3.3 zahtev)
@@ -219,7 +220,7 @@ public class PostService {
     // ============================================
     
     @Transactional
-    public void deletePost(Long postId, String username) {
+    public void deletePost(Long postId, String email) {
         Optional<Post> postOpt = postRepository.findById(postId);
         if (!postOpt.isPresent()) {
             throw new RuntimeException("Post nije pronađen! ID: " + postId);
@@ -227,8 +228,8 @@ public class PostService {
 
         Post post = postOpt.get();
 
-        // Provera vlasništva
-        if (!post.getUser().getUsername().equals(username)) {
+        // Provera vlasništva - poredimo EMAIL!
+        if (!post.getUser().getEmail().equals(email)) {
             throw new RuntimeException("Nemate pravo da obrišete ovaj post!");
         }
 

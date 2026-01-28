@@ -28,40 +28,43 @@ public class AuthService {
 
     // Login metoda (sa Rate Limiting)
     public LoginResponse login(LoginRequest request, String ipAddress) {
-        
+
         // KORAK 1: Provera da li je IP adresa blokirana
         if (loginAttemptService.isBlocked(ipAddress)) {
             throw new RuntimeException("Previše pokušaja prijave! Pokušajte ponovo za 1 minut.");
         }
-        
+
         // KORAK 2: Pronađi korisnika po email-u
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
-        
+
         if (!userOpt.isPresent()) {
             loginAttemptService.loginFailed(ipAddress); // Beleži neuspešan pokušaj
             throw new RuntimeException("Pogrešan email ili lozinka!");
         }
-        
+
         User user = userOpt.get();
-        
+
         // KORAK 3: Proveri lozinku (BCrypt hash provera)
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             loginAttemptService.loginFailed(ipAddress); // Beleži neuspešan pokušaj
             throw new RuntimeException("Pogrešan email ili lozinka!");
         }
-        
+
         // KORAK 4: Proveri da li je nalog aktiviran
         if (!user.getActivated()) {
             throw new RuntimeException("Nalog nije aktiviran! Proverite email.");
         }
-        
+
         // KORAK 5: Uspešna prijava - generiši JWT token
         loginAttemptService.loginSucceeded(ipAddress); // Resetuj brojač pokušaja
-        String token = jwtUtil.generateToken(user.getUsername());
         
+        // FIX: Koristimo EMAIL umesto username u JWT tokenu!
+        // Razlog: JwtAuthenticationFilter i CustomUserDetailsService koriste email za loadUserByUsername()
+        String token = jwtUtil.generateToken(user.getEmail());
+
         // KORAK 6: Konvertuj User u UserDTO (bez lozinke)
         UserDTO userDTO = convertToDTO(user);
-        
+
         // KORAK 7: Vrati LoginResponse sa tokenom i user podacima
         return new LoginResponse(token, userDTO);
     }

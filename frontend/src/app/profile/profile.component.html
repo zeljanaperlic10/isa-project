@@ -1,0 +1,148 @@
+<!-- ============================================ -->
+<!-- LOADING -->
+<!-- ============================================ -->
+<div *ngIf="loading" class="loading-container">
+  <div class="spinner"></div>
+  <p>Učitavanje profila...</p>
+</div>
+
+<!-- ============================================ -->
+<!-- ERROR -->
+<!-- ============================================ -->
+<div *ngIf="error && !loading" class="error-container">
+  <h2>😔 {{ error }}</h2>
+  <button class="btn-primary" (click)="goBack()">← Nazad na početnu</button>
+</div>
+
+<!-- ============================================ -->
+<!-- PROFILE CONTENT -->
+<!-- ============================================ -->
+<div *ngIf="!loading && !error && user" class="profile-container">
+
+  <!-- Back Button -->
+  <div class="back-button">
+    <button (click)="goBack()">← Nazad</button>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- USER INFO CARD -->
+  <!-- ============================================ -->
+  <div class="user-card">
+    
+    <!-- Avatar -->
+    <div class="user-avatar">
+      {{ user.username.charAt(0).toUpperCase() }}
+    </div>
+
+    <!-- User Details -->
+    <div class="user-details">
+      <h1 class="username">{{ user.username }}</h1>
+      
+      <div class="user-meta">
+        <p *ngIf="user.firstName && user.lastName">
+          <span class="icon">👤</span>
+          {{ user.firstName }} {{ user.lastName }}
+        </p>
+        <p *ngIf="user.email">
+          <span class="icon">📧</span>
+          {{ user.email }}
+        </p>
+        <p *ngIf="user.address">
+          <span class="icon">📍</span>
+          {{ user.address }}
+        </p>
+        <p *ngIf="user.createdAt">
+          <span class="icon">📅</span>
+          Član od {{ user.createdAt | date:'mediumDate' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="user-stats">
+      <div class="stat-box">
+        <div class="stat-number">{{ totalPosts }}</div>
+        <div class="stat-label">Postova</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">{{ totalViews }}</div>
+        <div class="stat-label">Pregleda</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">{{ totalLikes }}</div>
+        <div class="stat-label">Lajkova</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================ -->
+  <!-- USER POSTS SECTION -->
+  <!-- ============================================ -->
+  <div class="posts-section">
+    <h2>🎬 Objave korisnika {{ user.username }}</h2>
+
+    <!-- POSTS GRID -->
+    <div *ngIf="posts.length > 0" class="posts-grid">
+      
+      <!-- JEDAN POST -->
+      <div 
+        *ngFor="let post of posts" 
+        class="post-card"
+        (click)="openVideo(post.id)">
+        
+        <!-- Thumbnail sa crvenim border-om (3.1 zahtev) -->
+        <div class="thumbnail-container">
+          <img 
+            [src]="getThumbnailUrl(post)" 
+            [alt]="post.title"
+            class="thumbnail">
+          
+          <!-- Crvena tačka - video indikator -->
+          <div class="video-indicator"></div>
+        </div>
+
+        <!-- Post Info -->
+        <div class="post-info">
+          <h3 class="post-title">{{ post.title }}</h3>
+
+          <!-- Datum -->
+          <div class="post-meta">
+            <span class="date">{{ post.createdAt | date:'short' }}</span>
+          </div>
+
+          <!-- Tagovi -->
+          <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
+            <span class="tag" *ngFor="let tag of post.tags">
+              #{{ tag }}
+            </span>
+          </div>
+
+          <!-- Statistika -->
+          <div class="post-stats">
+            <span class="stat">
+              <span class="icon">👁️</span> {{ post.viewsCount }}
+            </span>
+            <span class="stat">
+              <span class="icon">❤️</span> {{ post.likesCount }}
+            </span>
+            <span class="stat">
+              <span class="icon">💬</span> {{ post.commentsCount }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+      <!-- Kraj jednog posta -->
+
+    </div>
+    <!-- Kraj posts-grid -->
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="posts.length === 0" class="empty-state">
+      <p>😔 Korisnik {{ user.username }} još nema objava</p>
+    </div>
+
+  </div>
+
+</div>

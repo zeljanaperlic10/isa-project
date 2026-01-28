@@ -1,0 +1,146 @@
+<!-- ============================================ -->
+<!-- LOADING -->
+<!-- ============================================ -->
+<div *ngIf="loading" class="loading-container">
+  <div class="spinner"></div>
+  <p>Učitavanje videa...</p>
+</div>
+
+<!-- ============================================ -->
+<!-- ERROR -->
+<!-- ============================================ -->
+<div *ngIf="error && !loading" class="error-container">
+  <h2>😔 {{ error }}</h2>
+  <button class="btn-primary" (click)="goBack()">← Nazad na početnu</button>
+</div>
+
+<!-- ============================================ -->
+<!-- VIDEO PLAYER -->
+<!-- ============================================ -->
+<div *ngIf="post && !loading && !error" class="video-container">
+  
+  <!-- Back Button -->
+  <div class="back-button">
+    <button (click)="goBack()">← Nazad</button>
+  </div>
+
+  <!-- VIDEO WRAPPER sa crvenim border-om i tačkom (3.1 zahtev) -->
+  <div class="video-wrapper">
+    
+    <!-- CRVENA TAČKA - Video indikator -->
+    <div class="video-indicator"></div>
+
+    <!-- YouTube Video -->
+    <iframe 
+      *ngIf="isYouTube && videoEmbedUrl"
+      [src]="videoEmbedUrl"
+      class="video-player"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+
+    <!-- Lokalni Video -->
+    <video 
+      *ngIf="!isYouTube && localVideoUrl"
+      [src]="localVideoUrl"
+      class="video-player"
+      controls
+      autoplay>
+      Vaš browser ne podržava video tag.
+    </video>
+
+  </div>
+
+  <!-- ============================================ -->
+  <!-- VIDEO INFO -->
+  <!-- ============================================ -->
+  <div class="video-info">
+    
+    <!-- Naslov -->
+    <h1 class="video-title">{{ post.title }}</h1>
+
+    <!-- Meta Info -->
+    <div class="video-meta">
+      <div class="meta-left">
+        <!-- Korisnik (klikabilno - 3.1 zahtev za profil) -->
+        <div class="user-info" (click)="goToUserProfile(post.user.username)">
+          <div class="user-avatar">{{ post.user.username.charAt(0).toUpperCase() }}</div>
+          <span class="username">{{ post.user.username }}</span>
+        </div>
+
+        <!-- Vreme -->
+        <span class="date">{{ post.createdAt | date:'medium' }}</span>
+      </div>
+
+      <!-- Statistika -->
+      <div class="meta-right">
+        <span class="stat">👁️ {{ post.viewsCount }}</span>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ACTION BUTTONS -->
+    <!-- ============================================ -->
+    <div class="action-buttons">
+      
+      <!-- Like Button -->
+      <button 
+        class="action-btn"
+        [class.disabled]="!isLoggedIn"
+        (click)="onLike()">
+        ❤️ {{ post.likesCount }} Like
+      </button>
+
+      <!-- Comment Button -->
+      <button 
+        class="action-btn"
+        [class.disabled]="!isLoggedIn"
+        (click)="onComment()">
+        💬 {{ post.commentsCount }} Komentar
+      </button>
+
+    </div>
+
+    <!-- ============================================ -->
+    <!-- LOGIN REMINDER (ako nije prijavljen) -->
+    <!-- ============================================ -->
+    <div *ngIf="!isLoggedIn" class="login-reminder">
+      <p>🔒 Morate biti prijavljeni da biste lajkovali i komentarisali objave.</p>
+      <button class="btn-login" (click)="goToLogin()">Prijavite se ovde</button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- OPIS -->
+    <!-- ============================================ -->
+    <div *ngIf="post.description" class="video-description">
+      <h3>Opis</h3>
+      <p>{{ post.description }}</p>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- TAGOVI -->
+    <!-- ============================================ -->
+    <div *ngIf="post.tags && post.tags.length > 0" class="video-tags">
+      <h3>Tagovi</h3>
+      <div class="tags-list">
+        <span class="tag" *ngFor="let tag of post.tags">
+          #{{ tag }}
+        </span>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- LOKACIJA (ako postoji) -->
+    <!-- ============================================ -->
+    <div *ngIf="post.locationName" class="video-location">
+      <h3>Lokacija</h3>
+      <p>📍 {{ post.locationName }}</p>
+      <p *ngIf="post.latitude && post.longitude" class="coordinates">
+        <small>({{ post.latitude }}, {{ post.longitude }})</small>
+      </p>
+    </div>
+
+  </div>
+
+</div>
