@@ -1,0 +1,124 @@
+<!-- ============================================ -->
+<!-- COMMENTS SECTION -->
+<!-- ============================================ -->
+<div class="comments-section">
+
+  <!-- Header -->
+  <div class="comments-header">
+    <h2>💬 Komentari ({{ totalComments }})</h2>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- FORMA ZA NOVI KOMENTAR (samo registrovani - 3.6) -->
+  <!-- ============================================ -->
+  <div *ngIf="isLoggedIn" class="comment-form">
+    <h3>Ostavi komentar</h3>
+    
+    <textarea 
+      [(ngModel)]="newCommentText"
+      placeholder="Napiši svoj komentar..."
+      rows="3"
+      maxlength="1000"
+      [disabled]="submitting"
+      class="comment-textarea">
+    </textarea>
+
+    <div class="form-footer">
+      <span class="char-count">{{ newCommentText.length }} / 1000</span>
+      
+      <button 
+        (click)="submitComment()"
+        [disabled]="submitting || !newCommentText.trim()"
+        class="btn-submit">
+        {{ submitting ? 'Šaljem...' : 'Objavi komentar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- PORUKA ZA NEPRIJAVLJENE (3.6 zahtev) -->
+  <!-- ============================================ -->
+  <div *ngIf="!isLoggedIn" class="login-prompt">
+    <p>🔒 Morate biti prijavljeni da biste komentarisali.</p>
+    <a routerLink="/login" class="btn-login-link">Prijavite se</a>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- LOADING -->
+  <!-- ============================================ -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Učitavanje komentara...</p>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- ERROR -->
+  <!-- ============================================ -->
+  <div *ngIf="error && !loading" class="error-message">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- COMMENTS LIST (3.6 - javno dostupno) -->
+  <!-- ============================================ -->
+  <div *ngIf="!loading && !error" class="comments-list">
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="comments.length === 0" class="empty-state">
+      <p>😔 Još nema komentara. Budite prvi koji će komentarisati!</p>
+    </div>
+
+    <!-- JEDAN KOMENTAR -->
+    <div 
+      *ngFor="let comment of comments" 
+      class="comment-card"
+      [class.own-comment]="isOwner(comment)">
+      
+      <!-- User Avatar + Username -->
+      <div class="comment-header">
+        <div class="user-avatar">
+          {{ comment.username.charAt(0).toUpperCase() }}
+        </div>
+        
+        <div class="comment-meta">
+          <span class="username">{{ comment.username }}</span>
+          <span class="date">{{ comment.createdAt | date:'medium' }}</span>
+        </div>
+
+        <!-- Delete Button (samo za vlasnika - 3.6) -->
+        <button 
+          *ngIf="isOwner(comment)"
+          (click)="deleteComment(comment)"
+          class="btn-delete"
+          title="Obriši komentar">
+          🗑️
+        </button>
+      </div>
+
+      <!-- Comment Text -->
+      <div class="comment-body">
+        <p>{{ comment.text }}</p>
+      </div>
+
+    </div>
+    <!-- Kraj jednog komentara -->
+
+  </div>
+
+  <!-- ============================================ -->
+  <!-- LOAD MORE BUTTON (3.6 - paginacija) -->
+  <!-- ============================================ -->
+  <div *ngIf="hasMore && !loading" class="load-more-container">
+    <button 
+      (click)="loadMoreComments()"
+      [disabled]="loadingMore"
+      class="btn-load-more">
+      {{ loadingMore ? 'Učitavanje...' : 'Učitaj još komentara' }}
+    </button>
+    
+    <p class="pagination-info">
+      Prikazano {{ comments.length }} od {{ totalComments }} komentara
+    </p>
+  </div>
+
+</div>

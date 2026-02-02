@@ -62,6 +62,7 @@ public class SecurityConfig {
                 System.out.println("   - GET /api/videos/** (streaming videa - 3.1)");
                 System.out.println("   - GET /api/thumbnails/** (thumbnail slike - 3.1)");
                 System.out.println("   - GET /api/users/** (profil korisnika - 3.1)");
+                System.out.println("   - GET /api/posts/{id}/comments (čitanje komentara - 3.6)");
                 
                 auth
                     // Auth endpoint-i (registracija, login, aktivacija)
@@ -80,10 +81,12 @@ public class SecurityConfig {
                     .requestMatchers("GET", "/api/users/**").permitAll()
                     
                     // ============================================
-                    // ZAHTEVA AUTENTIFIKACIJU (3.3 zahtev)
+                    // ZAHTEVA AUTENTIFIKACIJU (3.3 i 3.6 zahtevi)
                     // ============================================
-                    // POST /api/posts - kreiranje posta (samo registrovani)
+                    // POST /api/posts - kreiranje posta (samo registrovani - 3.3)
                     // DELETE /api/posts/** - brisanje posta (samo registrovani)
+                    // POST /api/posts/{id}/comments - kreiranje komentara (samo registrovani - 3.6)
+                    // DELETE /api/comments/** - brisanje komentara (samo registrovani - 3.6)
                     // Sve ostalo
                     .anyRequest().authenticated();
             })

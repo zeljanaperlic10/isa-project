@@ -2,6 +2,7 @@ package repository;
 
 import model.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -61,4 +62,32 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // Pronalaženje postova koji imaju definisanu lokaciju
     @Query("SELECT p FROM Post p WHERE p.latitude IS NOT NULL AND p.longitude IS NOT NULL ORDER BY p.createdAt DESC")
     List<Post> findAllWithLocation();
+    
+    // ============================================
+    // BROJAČ PREGLEDA - ATOMIC UPDATE (3.7 zahtev)
+    // ============================================
+    
+    /**
+     * Inkrementira brojač pregleda - THREAD-SAFE (3.7 zahtev)
+     * 
+     * ATOMIC OPERACIJA:
+     * - Direktno inkrementuje u bazi (UPDATE ... SET ... + 1)
+     * - Ne čita pa piše (bez race condition-a!)
+     * - Database garantuje konzistentnost
+     * 
+     * JPQL QUERY:
+     * UPDATE Post p SET p.viewsCount = p.viewsCount + 1 WHERE p.id = :postId
+     * 
+     * SQL QUERY (generiše se):
+     * UPDATE posts SET views_count = views_count + 1 WHERE id = ?
+     * 
+     * @Modifying - označava da query menja podatke (ne SELECT)
+     * @Query - custom JPQL query
+     * 
+     * @param postId - ID posta
+     * @return int - broj ažuriranih redova (1 ako uspešno, 0 ako post ne postoji)
+     */
+    @Modifying
+    @Query("UPDATE Post p SET p.viewsCount = p.viewsCount + 1 WHERE p.id = :postId")
+    int incrementViewCount(@Param("postId") Long postId);
 }

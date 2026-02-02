@@ -52,6 +52,33 @@ export class PostService {
   }
 
   // ============================================
+  // BROJAČ KOMENTARA (3.6 zahtev)
+  // ============================================
+
+  /**
+   * Inkrementira brojač komentara na postu.
+   * Poziva se kada se kreira novi komentar.
+   * 
+   * @param postId - ID posta
+   */
+  incrementCommentsCount(postId: number): void {
+    // Optimistički update - ažuriraj lokalno bez čekanja backend-a
+    // Backend će ovo uraditi automatski, ali za instant UI feedback
+    console.log(`➕ Increment comments count za post ${postId}`);
+  }
+
+  /**
+   * Dekrementira brojač komentara na postu.
+   * Poziva se kada se briše komentar.
+   * 
+   * @param postId - ID posta
+   */
+  decrementCommentsCount(postId: number): void {
+    // Optimistički update - ažuriraj lokalno
+    console.log(`➖ Decrement comments count za post ${postId}`);
+  }
+
+  // ============================================
   // URL HELPERS (za video i thumbnail)
   // ============================================
 

@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+option java_package = "com.example.proto";
+option java_outer_classname = "UploadEventProto";
+
+// UploadEvent - Protobuf definicija (3.14 zahtev)
+// 
+// KORISTI SE ZA:
+// - Binary serijalizaciju (manji payload)
+// - Brže procesiranje
+// - Cross-platform komunikaciju
+//
+// POREĐENJE SA JSON:
+// JSON (~500 bytes) vs Protobuf (~200 bytes)
+// JSON serijalizacija: ~5ms vs Protobuf: ~1ms
+
+message UploadEvent {
+  // ID videa (Post ID)
+  int64 post_id = 1;
+  
+  // Naslov videa
+  string title = 2;
+  
+  // Opis videa (opciono)
+  string description = 3;
+  
+  // Autor (username)
+  string author = 4;
+  
+  // Email autora
+  string author_email = 5;
+  
+  // URL videa
+  string video_url = 6;
+  
+  // URL thumbnail slike
+  string thumbnail_url = 7;
+  
+  // Veličina fajla u bajtovima
+  int64 file_size = 8;
+  
+  // Trajanje u sekundama (opciono)
+  int32 duration = 9;
+  
+  // Timestamp (ISO 8601 format)
+  string timestamp = 10;
+  
+  // Event tip (npr: "VIDEO_UPLOADED")
+  string event_type = 11;
+}
