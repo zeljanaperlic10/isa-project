@@ -1,0 +1,223 @@
+<!-- 
+  watch-party-list.component.html - Lista Watch Party soba (3.15)
+  
+  STRUKTURA:
+  1. Header sa tab-ovima
+  2. Loading spinner
+  3. Error poruka
+  4. Lista soba (cards)
+  5. Modal za kreiranje sobe
+-->
+
+<div class="watch-party-list-container">
+  
+  <!-- ============================================ -->
+  <!-- HEADER - Naslov i dugme za kreiranje -->
+  <!-- ============================================ -->
+  
+  <div class="header">
+    <h1>🎬 Watch Party</h1>
+    <p class="subtitle">Gledaj video zajedno sa prijateljima u realnom vremenu!</p>
+    
+    <button class="create-btn" (click)="openCreateModal()">
+      <span class="icon">+</span> Kreiraj sobu
+    </button>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- TAB NAVIGACIJA -->
+  <!-- ============================================ -->
+  
+  <div class="tabs">
+    <button 
+      class="tab" 
+      [class.active]="activeTab === 'all'"
+      (click)="switchTab('all')">
+      🌍 Sve sobe
+    </button>
+    
+    <button 
+      class="tab" 
+      [class.active]="activeTab === 'my'"
+      (click)="switchTab('my')">
+      👤 Moje sobe
+    </button>
+    
+    <button 
+      class="tab" 
+      [class.active]="activeTab === 'joined'"
+      (click)="switchTab('joined')">
+      👥 Pridružene sobe
+    </button>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- LOADING SPINNER -->
+  <!-- ============================================ -->
+  
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Učitavanje soba...</p>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- ERROR PORUKA -->
+  <!-- ============================================ -->
+  
+  <div *ngIf="errorMessage && !loading" class="error-message">
+    ⚠️ {{ errorMessage }}
+  </div>
+
+  <!-- ============================================ -->
+  <!-- LISTA SOBA -->
+  <!-- ============================================ -->
+  
+  <div *ngIf="!loading && !errorMessage" class="rooms-grid">
+    
+    <!-- PRAZNA LISTA -->
+    <div *ngIf="rooms.length === 0" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>Nema soba</h3>
+      <p *ngIf="activeTab === 'all'">Trenutno nema aktivnih soba. Kreiraj prvu!</p>
+      <p *ngIf="activeTab === 'my'">Nisi kreirao nijednu sobu.</p>
+      <p *ngIf="activeTab === 'joined'">Nisi se pridružio nijednoj sobi.</p>
+      
+      <button class="create-btn-secondary" (click)="openCreateModal()">
+        Kreiraj sobu
+      </button>
+    </div>
+
+    <!-- SOBE (CARDS) -->
+    <div *ngFor="let party of rooms" class="room-card">
+      
+      <!-- HEADER CARD-a -->
+      <div class="card-header">
+        <h3 class="room-name">{{ party.name }}</h3>
+        
+        <!-- Badge: Tvoja soba -->
+        <span *ngIf="isCreator(party)" class="badge creator-badge">
+          👑 Tvoja soba
+        </span>
+        
+        <!-- Badge: Član si -->
+        <span *ngIf="!isCreator(party) && isMember(party)" class="badge member-badge">
+          ✅ Član
+        </span>
+      </div>
+
+      <!-- INFORMACIJE O SOBI -->
+      <div class="card-body">
+        
+        <!-- Kreator -->
+        <div class="info-row">
+          <span class="label">👤 Kreator:</span>
+          <span class="value">{{ party.creator.username }}</span>
+        </div>
+
+        <!-- Broj članova -->
+        <div class="info-row">
+          <span class="label">👥 Članovi:</span>
+          <span class="value">{{ party.members.length }}</span>
+        </div>
+
+        <!-- Trenutni video (ako postoji) -->
+        <div class="info-row" *ngIf="hasCurrentVideo(party)">
+          <span class="label">🎬 Video:</span>
+          <span class="value current-video">{{ party.currentPost?.title }}</span>
+        </div>
+
+        <!-- Nema videa -->
+        <div class="info-row" *ngIf="!hasCurrentVideo(party)">
+          <span class="label">🎬 Video:</span>
+          <span class="value no-video">Čeka se video...</span>
+        </div>
+
+        <!-- Vreme kreiranja -->
+        <div class="info-row">
+          <span class="label">🕐 Kreirano:</span>
+          <span class="value">{{ party.createdAt | date:'short' }}</span>
+        </div>
+      </div>
+
+      <!-- AKCIJE (dugmad) -->
+      <div class="card-actions">
+        
+        <!-- Ako JE član → Uđi u sobu -->
+        <button 
+          *ngIf="isMember(party)" 
+          class="btn btn-primary" 
+          [routerLink]="['/watch-party', party.id]">
+          Uđi u sobu
+        </button>
+
+        <!-- Ako NIJE član → Pridruži se -->
+        <button 
+          *ngIf="!isMember(party)" 
+          class="btn btn-secondary" 
+          (click)="joinRoom(party)">
+          Pridruži se
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ============================================ -->
+<!-- MODAL - Kreiranje sobe -->
+<!-- ============================================ -->
+
+<div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2>Kreiraj novu sobu</h2>
+      <button class="close-btn" (click)="closeCreateModal()">×</button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      
+      <!-- Input za naziv -->
+      <div class="form-group">
+        <label for="roomName">Naziv sobe:</label>
+        <input 
+          type="text" 
+          id="roomName"
+          class="form-input"
+          [(ngModel)]="newRoomName"
+          placeholder="npr. Movie Night"
+          maxlength="200"
+          (keyup.enter)="createRoom()"
+          [disabled]="creating">
+      </div>
+
+      <!-- Error poruka -->
+      <div *ngIf="errorMessage" class="modal-error">
+        ⚠️ {{ errorMessage }}
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button 
+        class="btn btn-cancel" 
+        (click)="closeCreateModal()"
+        [disabled]="creating">
+        Otkaži
+      </button>
+      
+      <button 
+        class="btn btn-primary" 
+        (click)="createRoom()"
+        [disabled]="creating">
+        <span *ngIf="!creating">Kreiraj</span>
+        <span *ngIf="creating">Kreiranje...</span>
+      </button>
+    </div>
+
+  </div>
+</div>

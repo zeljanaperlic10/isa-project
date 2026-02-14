@@ -1,0 +1,197 @@
+<!-- 
+  watch-party-room.component.html - Unutar Watch Party sobe (3.15)
+  
+  STRUKTURA:
+  1. Header - Naziv sobe, status
+  2. Kontrola - Izaberi video i pokreni (samo kreator)
+  3. Trenutni video (ako postoji)
+  4. Lista članova
+  5. Akcije - Napusti/Zatvori sobu
+-->
+
+<div class="watch-party-room-container">
+
+  <!-- ============================================ -->
+  <!-- LOADING -->
+  <!-- ============================================ -->
+  
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Učitavanje sobe...</p>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- ERROR -->
+  <!-- ============================================ -->
+  
+  <div *ngIf="errorMessage && !loading" class="error-container">
+    <div class="error-icon">⚠️</div>
+    <h2>{{ errorMessage }}</h2>
+    <button class="btn btn-primary" [routerLink]="['/watch-party-list']">
+      ← Nazad na listu soba
+    </button>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- ROOM CONTENT -->
+  <!-- ============================================ -->
+  
+  <div *ngIf="room && !loading" class="room-content">
+
+    <!-- HEADER -->
+    <div class="room-header">
+      <div class="header-left">
+        <h1>{{ room.name }}</h1>
+        
+        <!-- WebSocket status -->
+        <div class="status-indicator">
+          <span 
+            class="status-dot" 
+            [class.connected]="websocketConnected"
+            [class.disconnected]="!websocketConnected">
+          </span>
+          <span class="status-text">
+            {{ websocketConnected ? 'Konektovan' : 'Diskonektovan' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Kreator badge -->
+        <span *ngIf="isCreator()" class="badge creator-badge">
+          👑 Kreator
+        </span>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VIDEO CONTROL (samo kreator) -->
+    <!-- ============================================ -->
+    
+    <div *ngIf="isCreator()" class="video-control-section">
+      <h2>🎬 Kontrola videa</h2>
+      
+      <div class="control-panel">
+        <div class="form-group">
+          <label for="videoSelect">Izaberi video:</label>
+          <select 
+            id="videoSelect" 
+            class="form-select"
+            [(ngModel)]="selectedVideoId">
+            <option [value]="null" disabled>-- Izaberi video --</option>
+            <option *ngFor="let video of availableVideos" [value]="video.id">
+              {{ video.title }}
+            </option>
+          </select>
+        </div>
+
+        <button 
+          class="btn btn-primary btn-large" 
+          (click)="startVideo()"
+          [disabled]="!selectedVideoId">
+          <span class="icon">▶️</span> Pokreni video za sve
+        </button>
+      </div>
+
+      <div class="info-box">
+        <strong>ℹ️ Napomena:</strong> Kada pokreneš video, automatski će se otvoriti kod svih članova sobe u realnom vremenu!
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- TRENUTNI VIDEO -->
+    <!-- ============================================ -->
+    
+    <div class="current-video-section">
+      <h2>📺 Trenutni video</h2>
+
+      <!-- Ima video -->
+      <div *ngIf="room.currentPost" class="current-video-card">
+        <div class="video-info">
+          <h3>{{ room.currentPost.title }}</h3>
+          <p *ngIf="room.currentPost.description">{{ room.currentPost.description }}</p>
+        </div>
+        
+        <button 
+          class="btn btn-secondary" 
+          [routerLink]="['/video', room.currentPost.id]">
+          <span class="icon">🎬</span> Gledaj video
+        </button>
+      </div>
+
+      <!-- Nema videa -->
+      <div *ngIf="!room.currentPost" class="no-video">
+        <div class="no-video-icon">📭</div>
+        <p>Trenutno nema videa.</p>
+        <p class="subtitle">
+          <span *ngIf="isCreator()">Izaberi video i pokreni ga za sve članove!</span>
+          <span *ngIf="!isCreator()">Čeka se da kreator pokrene video...</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ČLANOVI SOBE -->
+    <!-- ============================================ -->
+    
+    <div class="members-section">
+      <h2>👥 Članovi ({{ room.members.length }})</h2>
+
+      <div class="members-list">
+        <div 
+          *ngFor="let member of room.members" 
+          class="member-card"
+          [class.is-creator]="member === room.creator.username"
+          [class.is-me]="member === currentUsername">
+          
+          <div class="member-avatar">
+            {{ member.charAt(0).toUpperCase() }}
+          </div>
+          
+          <div class="member-info">
+            <div class="member-name">
+              {{ member }}
+              <span *ngIf="member === currentUsername" class="me-badge">(Ti)</span>
+            </div>
+            
+            <div class="member-role">
+              <span *ngIf="member === room.creator.username">👑 Kreator</span>
+              <span *ngIf="member !== room.creator.username">👤 Član</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- AKCIJE -->
+    <!-- ============================================ -->
+    
+    <div class="actions-section">
+      
+      <!-- Napusti sobu (svi) -->
+      <button 
+        class="btn btn-secondary" 
+        (click)="leaveRoom()">
+        <span class="icon">🚪</span> Napusti sobu
+      </button>
+
+      <!-- Zatvori sobu (samo kreator) -->
+      <button 
+        *ngIf="isCreator()" 
+        class="btn btn-danger" 
+        (click)="closeRoom()">
+        <span class="icon">🚫</span> Zatvori sobu
+      </button>
+
+      <!-- Nazad na listu -->
+      <button 
+        class="btn btn-outline" 
+        [routerLink]="['/watch-party-list']">
+        <span class="icon">←</span> Nazad na listu
+      </button>
+    </div>
+
+  </div>
+
+</div>

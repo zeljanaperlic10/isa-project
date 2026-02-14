@@ -47,24 +47,27 @@ export class AuthService {
     return this.http.post<User>(`${this.API_URL}/register`, request);
   }
 
-  // LOGIN
+  // LOGIN (POPRAVLJENO - čuva username zasebno!)
   login(request: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.API_URL}/login`, request)
       .pipe(
         tap(response => {
           // Čuvanje tokena i korisnika u localStorage
           localStorage.setItem('jwt_token', response.token);
+          localStorage.setItem('username', response.user.username);  // ✅ DODATO - Watch Party treba ovo!
           localStorage.setItem('currentUser', JSON.stringify(response.user));
           this.currentUserSubject.next(response.user);
           console.log('✅ Korisnik prijavljen:', response.user.username);
+          console.log('💾 Sačuvano username:', response.user.username);
         })
       );
   }
 
-  // LOGOUT
+  // LOGOUT (POPRAVLJENO - briše i username!)
   logout(): void {
     // Brisanje tokena i korisnika iz localStorage
     localStorage.removeItem('jwt_token');
+    localStorage.removeItem('username');  // ✅ DODATO - obriši i username!
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
     console.log('🚪 Korisnik odjavljen');

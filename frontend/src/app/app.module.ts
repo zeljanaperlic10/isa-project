@@ -22,6 +22,8 @@ import { CommentService } from './services/comment.service';  // Komentari (3.6)
 
 // Interceptors
 import { JwtInterceptor } from './auth/jwt.interceptor';
+import { WatchPartyListComponent } from './watch-party-list/watch-party-list.component';
+import { WatchPartyRoomComponent } from './watch-party-room/watch-party-room.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,7 @@ import { JwtInterceptor } from './auth/jwt.interceptor';
     VideoPlayerComponent,
     UploadComponent,
     ProfileComponent,    // Profil stranica (3.1)
-    CommentsComponent    // Komentari (3.6)
+    CommentsComponent, WatchPartyListComponent, WatchPartyRoomComponent    // Komentari (3.6)
   ],
   imports: [
     BrowserModule,

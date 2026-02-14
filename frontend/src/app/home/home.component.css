@@ -98,6 +98,29 @@
   box-shadow: 0 4px 12px rgba(255, 77, 79, 0.4);
 }
 
+/* Watch Party dugme (3.15 zahtev) */
+.btn-watch-party {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-watch-party:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3d8f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
 /* ============================================ */
 /* MAIN CONTENT */
 /* ============================================ */
@@ -379,5 +402,6 @@
   .nav-links {
     width: 100%;
     justify-content: center;
+    flex-wrap: wrap;
   }
 }

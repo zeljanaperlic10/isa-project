@@ -21,6 +21,9 @@
         <!-- Upload dugme (3.3 zahtev - samo za prijavljene) -->
         <button class="btn-upload" (click)="goToUpload()">🎥 Postavite Video</button>
         
+        <!-- Watch Party dugme (3.15 zahtev) -->
+        <button class="btn-watch-party" (click)="goToWatchParty()">🎬 Watch Party</button>
+        
         <span class="welcome-text">Dobrodošao, {{ currentUser.username }}!</span>
         <button class="btn-secondary" (click)="logout()">Odjavi se</button>
       </ng-container>

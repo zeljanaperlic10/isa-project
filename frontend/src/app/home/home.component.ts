@@ -68,6 +68,13 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/upload']);
   }
 
+  /**
+   * Navigacija na Watch Party listu soba (3.15 zahtev)
+   */
+  goToWatchParty(): void {
+    this.router.navigate(['/watch-party-list']);
+  }
+
   goToProfile(username: string): void {
     this.router.navigate(['/profile', username]);
   }

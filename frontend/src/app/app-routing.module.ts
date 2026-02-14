@@ -6,6 +6,8 @@ import { HomeComponent } from './home/home.component';
 import { VideoPlayerComponent } from './video-player/video-player.component';
 import { UploadComponent } from './upload/upload.component';
 import { ProfileComponent } from './profile/profile.component';
+import { WatchPartyListComponent } from './watch-party-list/watch-party-list.component';
+import { WatchPartyRoomComponent } from './watch-party-room/watch-party-room.component';
 
 const routes: Routes = [
   // Default route
@@ -27,7 +29,11 @@ const routes: Routes = [
   // Profile route (javno dostupno - 3.1 zahtev)
   { path: 'profile/:username', component: ProfileComponent },
   
-  // Wildcard route (404)
+  // Watch Party routes (3.15 zahtev) - MORA biti PRE wildcard-a!
+  { path: 'watch-party-list', component: WatchPartyListComponent },
+  { path: 'watch-party/:id', component: WatchPartyRoomComponent },
+  
+  // Wildcard route (404) - MORA biti POSLEDNJI!
   { path: '**', redirectTo: '/home' }
 ];
 
