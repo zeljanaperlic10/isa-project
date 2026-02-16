@@ -1,6 +1,8 @@
 package controller;
 
 import dto.PostDTO;
+import model.Post;
+import repository.PostRepository;
 import service.FileStorageService;
 import service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -28,6 +31,9 @@ public class PostController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private PostRepository postRepository;
+
     // ============================================
     // POST /api/posts - UPLOAD VIDEO OBJAVE (3.3)
     // ============================================
@@ -38,13 +44,13 @@ public class PostController {
             @RequestParam(value = "description", required = false) String description,
             @RequestParam("video") MultipartFile videoFile,
             @RequestParam("thumbnail") MultipartFile thumbnailFile,
-            @RequestParam(value = "tags", required = false) String tagsString, // "programiranje,python,tutorial"
+            @RequestParam(value = "tags", required = false) String tagsString,
             @RequestParam(value = "latitude", required = false) Double latitude,
             @RequestParam(value = "longitude", required = false) Double longitude,
             @RequestParam(value = "locationName", required = false) String locationName,
             Authentication authentication) {
         
-        System.out.println("📥 POST /api/posts - Upload video objave");
+        System.out.println("🔥 POST /api/posts - Upload video objave");
         
         try {
             // ============================================
@@ -80,7 +86,7 @@ public class PostController {
             // KORAK 3: Logovanje upload informacija
             // ============================================
             
-            System.out.println("📹 Video: " + videoFile.getOriginalFilename() + 
+            System.out.println("🎹 Video: " + videoFile.getOriginalFilename() + 
                              " (" + formatFileSize(videoFile.getSize()) + ")");
             System.out.println("🖼️ Thumbnail: " + thumbnailFile.getOriginalFilename() + 
                              " (" + formatFileSize(thumbnailFile.getSize()) + ")");
@@ -131,7 +137,6 @@ public class PostController {
     public ResponseEntity<List<PostDTO>> getAllPosts() {
         System.out.println("📋 GET /api/posts - Svi postovi");
         
-        // NAPOMENA: Javno dostupno - i neautentifikovani mogu videti (3.1 zahtev)
         List<PostDTO> posts = postService.getAllPosts();
         
         System.out.println("✅ Vraćeno " + posts.size() + " postova");
@@ -139,7 +144,7 @@ public class PostController {
     }
 
     // ============================================
-    // GET /api/posts/{id} - JEDAN POST (3.1)
+    // GET /api/posts/{id} - JEDAN POST (3.1) - SA VIEW INCREMENT
     // ============================================
     
     @GetMapping("/posts/{id}")
@@ -149,6 +154,33 @@ public class PostController {
         try {
             PostDTO post = postService.getPostById(id);
             return ResponseEntity.ok(post);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Post nije pronađen: " + e.getMessage());
+        }
+    }
+
+    // ============================================
+    // GET /api/posts/{id}/refresh - REFRESH POST (BEZ VIEW INCREMENT) - NOVO! 🔄
+    // ============================================
+    
+    /**
+     * Dobija post BEZ incrementa view count-a.
+     * Koristi se za refresh nakon komentara/lajkova.
+     */
+    @GetMapping("/posts/{id}/refresh")
+    public ResponseEntity<?> refreshPost(@PathVariable Long id) {
+        System.out.println("🔄 GET /api/posts/" + id + "/refresh (bez view increment)");
+        
+        try {
+            // Pozovi repository direktno (bez incrementa)
+            Post post = postRepository.findByIdWithAssociations(id)
+                    .orElseThrow(() -> new RuntimeException("Post nije pronađen: " + id));
+            
+            PostDTO dto = new PostDTO(post);
+            return ResponseEntity.ok(dto);
+            
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -193,7 +225,6 @@ public class PostController {
         System.out.println("🗑️ DELETE /api/posts/" + id);
         
         try {
-            // Provera autentifikacije
             if (authentication == null || !authentication.isAuthenticated()) {
                 return ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
@@ -215,6 +246,124 @@ public class PostController {
     }
 
     // ============================================
+    // POST /api/posts/{id}/like - LAJKUJ POST ❤️
+    // ============================================
+    
+    @PostMapping("/posts/{id}/like")
+    public ResponseEntity<?> likePost(@PathVariable Long id, Authentication authentication) {
+        System.out.println("❤️ POST /api/posts/" + id + "/like");
+        
+        try {
+            // Provera autentifikacije - SAMO REGISTROVANI!
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of(
+                            "error", "Morate biti prijavljeni da biste lajkovali post!",
+                            "liked", false
+                        ));
+            }
+
+            String email = authentication.getName();
+            boolean success = postService.likePost(id, email);
+
+            if (success) {
+                System.out.println("✅ Post lajkovan");
+                return ResponseEntity.ok().body(Map.of(
+                    "message", "Post uspešno lajkovan!",
+                    "liked", true
+                ));
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body(Map.of(
+                            "message", "Već ste lajkovali ovaj post!",
+                            "liked", true
+                        ));
+            }
+
+        } catch (RuntimeException e) {
+            System.err.println("❌ Greška: " + e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ============================================
+    // DELETE /api/posts/{id}/like - UKLONI LAJK 💔
+    // ============================================
+    
+    @DeleteMapping("/posts/{id}/like")
+    public ResponseEntity<?> unlikePost(@PathVariable Long id, Authentication authentication) {
+        System.out.println("💔 DELETE /api/posts/" + id + "/like");
+        
+        try {
+            // Provera autentifikacije - SAMO REGISTROVANI!
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of(
+                            "error", "Morate biti prijavljeni!",
+                            "liked", false
+                        ));
+            }
+
+            String email = authentication.getName();
+            boolean success = postService.unlikePost(id, email);
+
+            if (success) {
+                System.out.println("✅ Like uklonjen");
+                return ResponseEntity.ok().body(Map.of(
+                    "message", "Like uspešno uklonjen!",
+                    "liked", false
+                ));
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(Map.of(
+                            "message", "Niste lajkovali ovaj post!",
+                            "liked", false
+                        ));
+            }
+
+        } catch (RuntimeException e) {
+            System.err.println("❌ Greška: " + e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ============================================
+    // GET /api/posts/{id}/like/status - PROVERA DA LI JE LAJKOVAN
+    // ============================================
+    
+    @GetMapping("/posts/{id}/like/status")
+    public ResponseEntity<?> getLikeStatus(@PathVariable Long id, Authentication authentication) {
+        System.out.println("🔍 GET /api/posts/" + id + "/like/status");
+        
+        try {
+            String email = (authentication != null && authentication.isAuthenticated()) 
+                ? authentication.getName() 
+                : null;
+
+            boolean isLiked = postService.isPostLikedByUser(id, email);
+
+            return ResponseEntity.ok().body(Map.of(
+                "postId", id,
+                "isLiked", isLiked
+            ));
+
+        } catch (Exception e) {
+            System.err.println("❌ Greška: " + e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ============================================
     // GET /api/videos/{filename} - STREAMING VIDEA (3.1)
     // ============================================
     
@@ -223,11 +372,9 @@ public class PostController {
         System.out.println("▶️ GET /api/videos/" + filename);
         
         try {
-            // Učitavanje video fajla
             Resource resource = fileStorageService.loadVideoAsResource(filename);
 
-            // Određivanje content type-a
-            String contentType = "video/mp4";  // Default (3.3 zahtev - samo MP4)
+            String contentType = "video/mp4";
             
             if (filename.endsWith(".webm")) {
                 contentType = "video/webm";
@@ -235,7 +382,6 @@ public class PostController {
                 contentType = "video/x-msvideo";
             }
 
-            // Vraćanje videa sa headerima za streaming
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
@@ -255,13 +401,10 @@ public class PostController {
     
     @GetMapping("/thumbnails/{filename:.+}")
     public ResponseEntity<Resource> getThumbnail(@PathVariable String filename) {
-        // NAPOMENA: Thumbnail će biti keširan u CacheConfig.java (3.3 zahtev)
-        
         try {
             Resource resource = fileStorageService.loadThumbnailAsResource(filename);
 
-            // Određivanje content type-a
-            String contentType = "image/jpeg";  // Default
+            String contentType = "image/jpeg";
             
             if (filename.endsWith(".png")) {
                 contentType = "image/png";

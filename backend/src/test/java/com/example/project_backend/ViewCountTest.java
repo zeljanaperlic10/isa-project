@@ -6,10 +6,11 @@ import repository.PostRepository;
 import repository.UserRepository;
 import service.PostService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +30,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * "Za potrebe demonstriranja mehanizma, napisati skriptu ili jedinični test 
  * koji simulira istovremenu posetu istom videu od strane više korisnika 
  * i pravilan inkrement broja pregleda."
+ * 
+ * VAŽNO: Klasa NIJE @Transactional jer thread-ovi moraju videti committed podatke!
  */
 @SpringBootTest
-@Transactional
 public class ViewCountTest {
 
     @Autowired
@@ -46,19 +48,25 @@ public class ViewCountTest {
     private User testUser;
     private Post testPost;
 
+    /**
+     * Setup - kreira test podatke COMMITTED u bazi.
+     * Thread-ovi mogu da vide ove podatke.
+     */
     @BeforeEach
     void setUp() {
         // Kreiraj test korisnika
         testUser = new User();
-        testUser.setUsername("testuser");
-        testUser.setEmail("test@example.com");
+        testUser.setUsername("testuser_" + System.currentTimeMillis());
+        testUser.setEmail("test_" + System.currentTimeMillis() + "@example.com");
         testUser.setPassword("password123");
         testUser.setFirstName("Test");
         testUser.setLastName("User");
-        testUser.setAddress("Test Address 123");  // ← DODATO!
+        testUser.setAddress("Test Address 123");
         testUser.setActivated(true);
         testUser.setEnabled(true);
-        testUser = userRepository.save(testUser);
+        
+        // VAŽNO: saveAndFlush() commit-uje podatke odmah!
+        testUser = userRepository.saveAndFlush(testUser);
 
         // Kreiraj test post
         testPost = new Post();
@@ -68,7 +76,9 @@ public class ViewCountTest {
         testPost.setThumbnailUrl("http://example.com/thumb.jpg");
         testPost.setUser(testUser);
         testPost.setViewsCount(0);  // Počinje sa 0
-        testPost = postRepository.save(testPost);
+        
+        // VAŽNO: saveAndFlush() commit-uje podatke odmah!
+        testPost = postRepository.saveAndFlush(testPost);
 
         System.out.println("=".repeat(80));
         System.out.println("🧪 VIEW COUNT TEST - Setup");
@@ -76,6 +86,20 @@ public class ViewCountTest {
         System.out.println("   Test Post ID: " + testPost.getId());
         System.out.println("   Initial Views: " + testPost.getViewsCount());
         System.out.println("=".repeat(80));
+    }
+
+    /**
+     * Cleanup - briše test podatke nakon svakog testa.
+     */
+    @AfterEach
+    void tearDown() {
+        if (testPost != null && testPost.getId() != null) {
+            postRepository.deleteById(testPost.getId());
+        }
+        if (testUser != null && testUser.getId() != null) {
+            userRepository.deleteById(testUser.getId());
+        }
+        System.out.println("🧹 Cleanup završen\n");
     }
 
     /**
@@ -105,7 +129,7 @@ public class ViewCountTest {
         System.out.println("   Očekivano: " + numberOfViews);
         System.out.println("   Dobijeno: " + finalCount);
 
-        assertEquals(numberOfViews, finalCount);
+        assertEquals(numberOfViews, finalCount, "Sekvencijalni pristup - očekivano 10 pregleda");
     }
 
     /**
@@ -125,6 +149,7 @@ public class ViewCountTest {
      * - Garantovano: 10 ✅
      */
     @Test
+    @Timeout(value = 30, unit = TimeUnit.SECONDS)
     void testConcurrentViewCount_Atomic() throws Exception {
         System.out.println("\n📝 TEST 2: Istovremeni pristup - ATOMIC UPDATE (3.7 zahtev)");
         System.out.println("-".repeat(80));
@@ -192,8 +217,8 @@ public class ViewCountTest {
         System.out.println("   Dobijeno: " + finalCount);
         System.out.println("   Thread-safe: " + (finalCount == numberOfThreads ? "✅ DA" : "❌ NE"));
 
-        assertEquals(numberOfThreads, successCount);
-        assertEquals(numberOfThreads, finalCount);
+        assertEquals(numberOfThreads, successCount, "Svi thread-ovi bi trebalo da uspeju");
+        assertEquals(numberOfThreads, finalCount, "ATOMIC UPDATE - očekivano 10 pregleda bez race condition!");
 
         System.out.println("\n🎉 ATOMIC UPDATE RADI! Nema race condition-a!");
     }
@@ -208,6 +233,7 @@ public class ViewCountTest {
      * - viewsCount = 100
      */
     @Test
+    @Timeout(value = 60, unit = TimeUnit.SECONDS) // <-- OVO NEDOSTAJE!
     void testConcurrentViewCount_StressTest() throws Exception {
         System.out.println("\n📝 TEST 3: Stress test - 100 istovremenih korisnika");
         System.out.println("-".repeat(80));
@@ -273,8 +299,8 @@ public class ViewCountTest {
         System.out.println("   Trajanje: " + duration + "ms");
         System.out.println("   Thread-safe: " + (finalCount == numberOfThreads ? "✅ DA" : "❌ NE"));
 
-        assertEquals(numberOfThreads, successCount);
-        assertEquals(numberOfThreads, finalCount);
+        assertEquals(numberOfThreads, successCount, "Svi thread-ovi bi trebalo da uspeju");
+        assertEquals(numberOfThreads, finalCount, "STRESS TEST - očekivano 100 pregleda");
 
         System.out.println("\n🎉 STRESS TEST USPEŠAN! Atomic update podnosi veliki load!");
     }
@@ -298,6 +324,9 @@ public class ViewCountTest {
         postService.incrementViewCount(fakePostId);
 
         System.out.println("\n✅ Metoda se izvršila bez exception-a (vraća 0 affected rows)");
+        
+        // Test prolazi ako nema exception
+        assertTrue(true, "incrementViewCount() ne baca exception za nepostojeći post");
     }
 
     /**
@@ -329,7 +358,7 @@ public class ViewCountTest {
         System.out.println("   Finalno: " + finalViews);
         System.out.println("   Razlika: " + (finalViews - initialViews));
 
-        assertEquals(initialViews + 3, finalViews);
+        assertEquals(initialViews + 3, finalViews, "getPostById() bi trebalo da inkrementuje preglede za 3");
 
         System.out.println("\n🎉 getPostById() AUTOMATSKI inkrementuje preglede!");
     }

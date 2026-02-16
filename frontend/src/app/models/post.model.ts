@@ -17,6 +17,9 @@ export interface Post {
   commentsCount: number;
   viewsCount: number;
   
+  // NOVO - da li je trenutni korisnik lajkovao ❤️
+  isLikedByCurrentUser: boolean;
+  
   // Vreme
   createdAt: string;             // ISO string format
 }

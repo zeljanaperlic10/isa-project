@@ -18,10 +18,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    /**
-     * GET /api/users/{username} - Dobija osnovne podatke o korisniku
-     * Javno dostupno (3.1 zahtev - za profil stranicu)
-     */
+    
     @GetMapping("/{username}")
     public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
         System.out.println("👤 GET /api/users/" + username);

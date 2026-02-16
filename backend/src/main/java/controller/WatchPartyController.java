@@ -12,24 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * WatchPartyController - REST API za Watch Party (3.15 zahtev)
- * 
- * ENDPOINT-i:
- * - POST   /api/watch-party/create       → Kreira sobu
- * - GET    /api/watch-party/active       → Lista aktivnih soba
- * - GET    /api/watch-party/my-rooms     → Sobe koje sam kreirao
- * - GET    /api/watch-party/joined       → Sobe gde sam član
- * - GET    /api/watch-party/{id}         → Jedna soba
- * - POST   /api/watch-party/{id}/join    → Pridruži se sobi
- * - POST   /api/watch-party/{id}/leave   → Napusti sobu
- * - DELETE /api/watch-party/{id}/close   → Zatvori sobu
- * 
- * NAPOMENA:
- * - Pokretanje videa se NE radi ovde!
- * - Pokretanje videa je preko WebSocket-a (real-time)
- * - Ovde su samo CRUD operacije
- */
+
 @RestController
 @RequestMapping("/api/watch-party")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -42,35 +25,7 @@ public class WatchPartyController {
     // KREIRANJE SOBE
     // ============================================
 
-    /**
-     * Kreira novu Watch Party sobu.
-     * 
-     * HTTP REQUEST:
-     * POST /api/watch-party/create
-     * Headers: Authorization: Bearer <JWT_TOKEN>
-     * Body: { "name": "Movie Night" }
-     * 
-     * HTTP RESPONSE (201 Created):
-     * {
-     *   "id": 123,
-     *   "name": "Movie Night",
-     *   "creator": { "id": 5, "username": "petar", ... },
-     *   "currentPost": null,
-     *   "active": true,
-     *   "createdAt": "2026-02-02T12:00:00",
-     *   "members": ["petar"],
-     *   "memberCount": 1
-     * }
-     * 
-     * AUTENTIFIKACIJA:
-     * - Authentication objekat sadrži podatke o ulogovanom korisniku
-     * - Spring Security automatski kreira ovaj objekat iz JWT tokena
-     * - authentication.getName() → username korisnika
-     * 
-     * @param request - { "name": "..." }
-     * @param authentication - Ulogovani korisnik (Spring Security)
-     * @return 201 Created sa WatchParty objektom
-     */
+    
     @PostMapping("/create")
     public ResponseEntity<?> createRoom(
             @RequestBody Map<String, String> request,
@@ -108,21 +63,7 @@ public class WatchPartyController {
     // LISTA SOBA
     // ============================================
 
-    /**
-     * Sve aktivne sobe (za homepage).
-     * 
-     * HTTP REQUEST:
-     * GET /api/watch-party/active
-     * Headers: Authorization: Bearer <JWT_TOKEN>
-     * 
-     * HTTP RESPONSE (200 OK):
-     * [
-     *   { "id": 123, "name": "Movie Night", "creator": {...}, "memberCount": 3 },
-     *   { "id": 124, "name": "Study Session", "creator": {...}, "memberCount": 5 }
-     * ]
-     * 
-     * @return 200 OK sa listom soba
-     */
+    
     @GetMapping("/active")
     public ResponseEntity<?> getActiveRooms() {
         try {
@@ -144,21 +85,7 @@ public class WatchPartyController {
         }
     }
 
-    /**
-     * Sobe koje je korisnik kreirao.
-     * 
-     * HTTP REQUEST:
-     * GET /api/watch-party/my-rooms
-     * Headers: Authorization: Bearer <JWT_TOKEN>
-     * 
-     * HTTP RESPONSE (200 OK):
-     * [
-     *   { "id": 123, "name": "My Room", "active": true, ... }
-     * ]
-     * 
-     * @param authentication - Ulogovani korisnik
-     * @return 200 OK sa listom soba
-     */
+    
     @GetMapping("/my-rooms")
     public ResponseEntity<?> getMyRooms(Authentication authentication) {
         try {
@@ -184,21 +111,7 @@ public class WatchPartyController {
         }
     }
 
-    /**
-     * Sobe gde je korisnik član.
-     * 
-     * HTTP REQUEST:
-     * GET /api/watch-party/joined
-     * Headers: Authorization: Bearer <JWT_TOKEN>
-     * 
-     * HTTP RESPONSE (200 OK):
-     * [
-     *   { "id": 125, "name": "Friend's Room", "creator": {...}, ... }
-     * ]
-     * 
-     * @param authentication - Ulogovani korisnik
-     * @return 200 OK sa listom soba
-     */
+  
     @GetMapping("/joined")
     public ResponseEntity<?> getJoinedRooms(Authentication authentication) {
         try {
@@ -224,26 +137,7 @@ public class WatchPartyController {
         }
     }
 
-    /**
-     * Jedna soba po ID-ju.
-     * 
-     * HTTP REQUEST:
-     * GET /api/watch-party/123
-     * Headers: Authorization: Bearer <JWT_TOKEN>
-     * 
-     * HTTP RESPONSE (200 OK):
-     * {
-     *   "id": 123,
-     *   "name": "Movie Night",
-     *   "creator": {...},
-     *   "currentPost": { "id": 10, "title": "My Video", ... },
-     *   "members": ["petar", "stefan", "ana"],
-     *   "memberCount": 3
-     * }
-     * 
-     * @param roomId - ID sobe (iz URL-a)
-     * @return 200 OK sa WatchParty objektom
-     */
+  
     @GetMapping("/{roomId}")
     public ResponseEntity<?> getRoomById(@PathVariable Long roomId) {
         try {
@@ -269,25 +163,7 @@ public class WatchPartyController {
     // PRIDRUŽIVANJE/NAPUŠTANJE SOBE
     // ============================================
 
-    /**
-     * Pridruži se sobi.
-     * 
-     * HTTP REQUEST:
-     * POST /api/watch-party/123/join
-     * Headers: Authorization: Bearer <JWT_TOKEN>
-     * 
-     * HTTP RESPONSE (200 OK):
-     * {
-     *   "id": 123,
-     *   "name": "Movie Night",
-     *   "members": ["petar", "stefan"],  ← Stefan je dodat!
-     *   "memberCount": 2
-     * }
-     * 
-     * @param roomId - ID sobe
-     * @param authentication - Ulogovani korisnik
-     * @return 200 OK sa ažuriranom WatchParty
-     */
+  
     @PostMapping("/{roomId}/join")
     public ResponseEntity<?> joinRoom(
             @PathVariable Long roomId,
@@ -316,25 +192,7 @@ public class WatchPartyController {
         }
     }
 
-    /**
-     * Napusti sobu.
-     * 
-     * HTTP REQUEST:
-     * POST /api/watch-party/123/leave
-     * Headers: Authorization: Bearer <JWT_TOKEN>
-     * 
-     * HTTP RESPONSE (200 OK):
-     * {
-     *   "id": 123,
-     *   "name": "Movie Night",
-     *   "members": ["petar"],  ← Stefan je uklonjen!
-     *   "memberCount": 1
-     * }
-     * 
-     * @param roomId - ID sobe
-     * @param authentication - Ulogovani korisnik
-     * @return 200 OK sa ažuriranom WatchParty
-     */
+   
     @PostMapping("/{roomId}/leave")
     public ResponseEntity<?> leaveRoom(
             @PathVariable Long roomId,
@@ -367,24 +225,7 @@ public class WatchPartyController {
     // ZATVARANJE SOBE
     // ============================================
 
-    /**
-     * Zatvori sobu (samo kreator).
-     * 
-     * HTTP REQUEST:
-     * DELETE /api/watch-party/123/close
-     * Headers: Authorization: Bearer <JWT_TOKEN>
-     * 
-     * HTTP RESPONSE (200 OK):
-     * {
-     *   "id": 123,
-     *   "name": "Movie Night",
-     *   "active": false  ← Soba zatvorena!
-     * }
-     * 
-     * @param roomId - ID sobe
-     * @param authentication - Ulogovani korisnik
-     * @return 200 OK sa zatvorenom WatchParty
-     */
+ 
     @DeleteMapping("/{roomId}/close")
     public ResponseEntity<?> closeRoom(
             @PathVariable Long roomId,

@@ -17,8 +17,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     "repository",
     "dto"
 })
-@EnableJpaRepositories(basePackages = "repository")  // ← DODATO - skenira repository-je
-@EntityScan(basePackages = "model")  // ← DODATO - skenira entity klase
+@EnableJpaRepositories(basePackages = "repository")  
+@EntityScan(basePackages = "model")  
 public class ProjectBackendApplication {
 
     public static void main(String[] args) {

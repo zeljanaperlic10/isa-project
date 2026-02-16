@@ -80,14 +80,11 @@ public class SecurityConfig {
                     // Korisnici - GET je javno (3.1 zahtev - profil stranica)
                     .requestMatchers("GET", "/api/users/**").permitAll()
                     
-                    // ============================================
-                    // ZAHTEVA AUTENTIFIKACIJU (3.3 i 3.6 zahtevi)
-                    // ============================================
-                    // POST /api/posts - kreiranje posta (samo registrovani - 3.3)
-                    // DELETE /api/posts/** - brisanje posta (samo registrovani)
-                    // POST /api/posts/{id}/comments - kreiranje komentara (samo registrovani - 3.6)
-                    // DELETE /api/comments/** - brisanje komentara (samo registrovani - 3.6)
-                    // Sve ostalo
+                    .requestMatchers("/ws/**").permitAll()   // STOMP endpoint
+                    .requestMatchers("/topic/**").permitAll() // opcionalno za subscribe
+                    .requestMatchers("/queue/**").permitAll() // opcionalno za subscribe
+                    
+                    
                     .anyRequest().authenticated();
             })
             

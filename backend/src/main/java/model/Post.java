@@ -61,8 +61,7 @@ public class Post {
     // TAGOVI (Many-to-Many) - 3.3 zahtev
     // ============================================
     
-    // NAPOMENA: Ne koristimo CascadeType.PERSIST jer tagovi se kreiraju odvojeno!
-    // Samo MERGE, REFRESH, DETACH
+    
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(
         name = "post_tags",
@@ -83,7 +82,7 @@ public class Post {
     @Column
     private Double longitude;
 
-    // Naziv lokacije (opciono, npr. "Beograd, Srbija")
+   
     @Column(length = 200)
     private String locationName;
 

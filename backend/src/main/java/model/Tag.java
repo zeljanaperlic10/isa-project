@@ -12,7 +12,7 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Naziv taga (npr. "programiranje", "priroda", "muzika")
+    
     @Column(unique = true, nullable = false, length = 50)
     private String name;
 
@@ -70,9 +70,7 @@ public class Tag {
         this.postCount = postCount;
     }
 
-    // ============================================
-    // EQUALS & HASHCODE (važno za Set kolekcije!)
-    // ============================================
+    
 
     @Override
     public boolean equals(Object o) {

@@ -9,9 +9,15 @@
   </div>
 
   <!-- ============================================ -->
-  <!-- FORMA ZA NOVI KOMENTAR (samo registrovani - 3.6) -->
+  <!-- FORMA ZA NOVI KOMENTAR (VIDLJIVA SVIMA - 3.1 zahtev!) -->
   <!-- ============================================ -->
-  <div *ngIf="isLoggedIn" class="comment-form">
+  <!-- 
+    3.1 ZAHTEV: "Pri pokušaju biti obavešteni"
+    - Input field MORA biti vidljiv SVIMA
+    - Neautentifikovani mogu da POKUŠAJU da napišu
+    - Poruka se prikazuje KAD KLIKNU "Pošalji" (submitComment metoda)
+  -->
+  <div class="comment-form">
     <h3>Ostavi komentar</h3>
     
     <textarea 
@@ -33,14 +39,12 @@
         {{ submitting ? 'Šaljem...' : 'Objavi komentar' }}
       </button>
     </div>
-  </div>
 
-  <!-- ============================================ -->
-  <!-- PORUKA ZA NEPRIJAVLJENE (3.6 zahtev) -->
-  <!-- ============================================ -->
-  <div *ngIf="!isLoggedIn" class="login-prompt">
-    <p>🔒 Morate biti prijavljeni da biste komentarisali.</p>
-    <a routerLink="/login" class="btn-login-link">Prijavite se</a>
+    <!-- HINT ZA NEPRIJAVLJENE (ispod forme) -->
+    <div *ngIf="!isLoggedIn" class="login-hint">
+      <p>💡 <strong>Napomena:</strong> Morate se prijaviti da biste mogli da komentarišete.</p>
+      <a routerLink="/login" class="btn-login-link">Prijavite se ovde</a>
+    </div>
   </div>
 
   <!-- ============================================ -->

@@ -14,20 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * WatchPartyService - Biznis logika za Watch Party (3.15 zahtev)
- * 
- * FUNKCIONALNOST:
- * - Kreiranje soba
- * - Pridruživanje/napuštanje soba
- * - Pokretanje videa
- * - Zatvaranje soba
- * 
- * SLOJ ARHITEKTURE:
- * Controller → SERVICE → Repository → Database
- *               ↑
- *         (Biznis logika ovde!)
- */
+
 @Service
 public class WatchPartyService {
 
@@ -44,25 +31,7 @@ public class WatchPartyService {
     // KREIRANJE SOBE
     // ============================================
 
-    /**
-     * Kreira novu Watch Party sobu.
-     * 
-     * PROCES:
-     * 1. Proveri da li korisnik postoji
-     * 2. Proveri da li korisnik već ima aktivnu sobu (opciono)
-     * 3. Kreiraj sobu
-     * 4. Sačuvaj u bazi
-     * 
-     * VALIDACIJE:
-     * - Korisnik mora postojati
-     * - Naziv sobe ne sme biti prazan
-     * - Naziv max 200 karaktera
-     * 
-     * @param username - Username kreatora
-     * @param roomName - Naziv sobe
-     * @return Kreirana WatchParty soba
-     * @throws RuntimeException - Ako korisnik ne postoji
-     */
+   
     @Transactional
     public WatchParty createRoom(String username, String roomName) {
         System.out.println("🎬 Kreiranje Watch Party sobe...");
@@ -116,16 +85,7 @@ public class WatchPartyService {
     // DOBIJANJE SOBA
     // ============================================
 
-    /**
-     * Sve aktivne sobe (za homepage).
-     * 
-     * USE CASE:
-     * - Korisnik otvori Watch Party stranicu
-     * - Vidi listu dostupnih soba
-     * - Može da klikne i priključi se
-     * 
-     * @return Lista aktivnih soba
-     */
+    
     public List<WatchParty> getActiveRooms() {
         System.out.println("📋 Učitavanje aktivnih soba...");
         
@@ -136,16 +96,7 @@ public class WatchPartyService {
         return rooms;
     }
 
-    /**
-     * Sobe koje je korisnik kreirao.
-     * 
-     * USE CASE:
-     * - "Moje sobe" tab
-     * - Korisnik vidi svoje aktivne/neaktivne sobe
-     * 
-     * @param username - Username korisnika
-     * @return Lista soba koje je kreirao
-     */
+   
     public List<WatchParty> getRoomsByCreator(String usernameOrEmail) {
         System.out.println("📋 Učitavanje soba korisnika: " + usernameOrEmail);
         
@@ -162,16 +113,7 @@ public class WatchPartyService {
         
         return rooms;
     }
-    /**
-     * Sobe gde je korisnik član (ali nije kreator).
-     * 
-     * USE CASE:
-     * - "Sobe gde sam član" tab
-     * - Korisnik vidi u koje sobe je pristup
-     * 
-     * @param username - Username korisnika
-     * @return Lista soba gde je član
-     */
+    
     public List<WatchParty> getRoomsWhereUserIsMember(String username) {
         System.out.println("📋 Učitavanje soba gde je " + username + " član...");
         
@@ -182,13 +124,7 @@ public class WatchPartyService {
         return rooms;
     }
 
-    /**
-     * Jedna soba po ID-ju.
-     * 
-     * @param roomId - ID sobe
-     * @return WatchParty soba
-     * @throws RuntimeException - Ako soba ne postoji
-     */
+   
     public WatchParty getRoomById(Long roomId) {
         System.out.println("🔍 Učitavanje sobe ID: " + roomId);
         
@@ -210,21 +146,7 @@ public class WatchPartyService {
     // PRIDRUŽIVANJE SOBI
     // ============================================
 
-    /**
-     * Korisnik se pridružuje sobi.
-     * 
-     * PROCES:
-     * 1. Pronađi sobu
-     * 2. Proveri da li je soba aktivna
-     * 3. Proveri da li korisnik već nije član
-     * 4. Dodaj korisnika u članove
-     * 5. Sačuvaj
-     * 
-     * @param roomId - ID sobe
-     * @param username - Username korisnika
-     * @return Ažurirana WatchParty soba
-     * @throws RuntimeException - Ako soba ne postoji ili nije aktivna
-     */
+   
     @Transactional
     public WatchParty joinRoom(Long roomId, String usernameOrEmail) {
         System.out.println("➕ Pridruživanje sobi...");
@@ -257,7 +179,7 @@ public class WatchPartyService {
             return party;
         }
         
-        // PROVERI DA LI JE KREATOR - ne dodavaj ponovo!
+        
         if (party.isCreator(actualUsername)) {
             System.out.println("⚠️ Korisnik je kreator, već je član!");
             return party;
@@ -279,19 +201,7 @@ public class WatchPartyService {
     // NAPUŠTANJE SOBE
     // ============================================
 
-    /**
-     * Korisnik napušta sobu.
-     * 
-     * PROCES:
-     * 1. Pronađi sobu
-     * 2. Ukloni korisnika iz članova
-     * 3. Ako je kreator napustio → zatvori sobu (opciono)
-     * 4. Sačuvaj
-     * 
-     * @param roomId - ID sobe
-     * @param username - Username korisnika
-     * @return Ažurirana WatchParty soba
-     */
+   
     @Transactional
     public WatchParty leaveRoom(Long roomId, String usernameOrEmail) {
         System.out.println("➖ Napuštanje sobe...");
@@ -335,26 +245,7 @@ public class WatchPartyService {
     // POKRETANJE VIDEA
     // ============================================
 
-    /**
-     * Kreator pokreće video u sobi.
-     * 
-     * PROCES:
-     * 1. Pronađi sobu
-     * 2. Proveri da li je korisnik kreator
-     * 3. Pronađi video (Post)
-     * 4. Postavi currentPost
-     * 5. Sačuvaj
-     * 
-     * NAPOMENA:
-     * - Samo kreator može pokrenuti video
-     * - WebSocket Controller će broadcast-ovati event svim članovima
-     * 
-     * @param roomId - ID sobe
-     * @param postId - ID videa
-     * @param username - Username korisnika
-     * @return Ažurirana WatchParty soba
-     * @throws RuntimeException - Ako korisnik nije kreator
-     */
+   
     @Transactional
     public WatchParty startVideo(Long roomId, Long postId, String username) {
         System.out.println("▶️ Pokretanje videa u sobi...");
@@ -394,20 +285,7 @@ public class WatchPartyService {
     // ZATVARANJE SOBE
     // ============================================
 
-    /**
-     * Zatvara sobu (postavlja active = false).
-     * 
-     * PROCES:
-     * 1. Pronađi sobu
-     * 2. Proveri da li je korisnik kreator
-     * 3. Postavi active = false
-     * 4. Sačuvaj
-     * 
-     * @param roomId - ID sobe
-     * @param username - Username korisnika
-     * @return Zatvorena WatchParty soba
-     * @throws RuntimeException - Ako korisnik nije kreator
-     */
+    
     @Transactional
     public WatchParty closeRoom(Long roomId, String username) {
         System.out.println("🚫 Zatvaranje sobe...");

@@ -3,16 +3,7 @@ package model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * Comment entitet - reprezentuje komentar na video objavi (3.6 zahtev)
- * 
- * ZAHTEVI:
- * - Tekst komentara
- * - Vreme kreiranja
- * - Nalog koji ga je kreirao
- * - Veza sa Post entitetom
- * - Potrebno keširanje
- */
+
 @Entity
 @Table(name = "comments")
 public class Comment {

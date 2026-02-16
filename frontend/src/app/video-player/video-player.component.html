@@ -80,16 +80,19 @@
     </div>
 
     <!-- ============================================ -->
-    <!-- ACTION BUTTONS -->
+    <!-- ACTION BUTTONS - AŽURIRANO! ❤️ -->
     <!-- ============================================ -->
     <div class="action-buttons">
       
-      <!-- Like Button -->
+      <!-- Like Button - DINAMIČKO SRCE! -->
       <button 
         class="action-btn"
+        [class.liked]="post.isLikedByCurrentUser"
         [class.disabled]="!isLoggedIn"
-        (click)="onLike()">
-        ❤️ {{ post.likesCount }} Like
+        (click)="toggleLike()">
+        <span class="icon">{{ post.isLikedByCurrentUser ? '❤️' : '🤍' }}</span>
+        <span class="count">{{ post.likesCount }}</span>
+        <span>{{ post.isLikedByCurrentUser ? 'Lajkovano' : 'Lajkuj' }}</span>
       </button>
 
       <!-- Comment Button -->
@@ -97,7 +100,9 @@
         class="action-btn"
         [class.disabled]="!isLoggedIn"
         (click)="onComment()">
-        💬 {{ post.commentsCount }} Komentar
+        <span class="icon">💬</span>
+        <span class="count">{{ post.commentsCount }}</span>
+        <span>Komentar</span>
       </button>
 
     </div>
@@ -107,7 +112,7 @@
     <!-- ============================================ -->
     <div *ngIf="!isLoggedIn" class="login-reminder">
       <p>🔒 Morate biti prijavljeni da biste lajkovali i komentarisali objave.</p>
-      <button class="btn-login" (click)="goToLogin()">Prijavite se ovde</button>
+      <button class="link-button" (click)="goToLogin()">Prijavite se ovde</button>
     </div>
 
     <!-- ============================================ -->
@@ -146,6 +151,10 @@
   <!-- ============================================ -->
   <!-- COMMENTS SECTION (3.6 zahtev) -->
   <!-- ============================================ -->
-  <app-comments [postId]="post.id"></app-comments>
+  <app-comments 
+    [postId]="post.id"
+    (commentAdded)="refreshPost()"
+    (commentDeleted)="refreshPost()">
+  </app-comments>
 
 </div>

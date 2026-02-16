@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommentService } from '../services/comment.service';
 import { AuthService } from '../auth/auth.service';
 import { Comment, CommentPage } from '../models/comment.model';
@@ -12,6 +12,7 @@ import { Comment, CommentPage } from '../models/comment.model';
  * - Paginacija (Load More dugme)
  * - Brisanje komentara (samo vlasnik)
  * - Rate limiting handling (60/sat)
+ * - Event emitovanje ka parent komponenti (za refresh brojača)
  */
 @Component({
   selector: 'app-comments',
@@ -25,6 +26,13 @@ export class CommentsComponent implements OnInit {
   // ============================================
   
   @Input() postId!: number;
+
+  // ============================================
+  // OUTPUT - Eventi za parent komponentu (NOVO! ❤️)
+  // ============================================
+  
+  @Output() commentAdded = new EventEmitter<void>();
+  @Output() commentDeleted = new EventEmitter<void>();
 
   // ============================================
   // KOMENTARI DATA
@@ -174,6 +182,7 @@ export class CommentsComponent implements OnInit {
    * ZAHTEVI (3.6):
    * - Samo registrovani (provera u HTML-u)
    * - Rate limiting: 60 komentara po satu
+   * - Emituje event ka parent komponenti za refresh brojača
    */
   submitComment(): void {
     // Validacija
@@ -199,6 +208,10 @@ export class CommentsComponent implements OnInit {
         // Dodaj novi komentar NA POČETAK liste (najnoviji prvi - 3.6 zahtev)
         this.comments.unshift(comment);
         this.totalComments++;
+
+        // NOVO - Obavesti parent komponentu da osvježi brojač! ❤️
+        this.commentAdded.emit();
+        console.log('📤 Event commentAdded emitovan!');
 
         // Resetuj formu
         this.newCommentText = '';
@@ -248,6 +261,10 @@ export class CommentsComponent implements OnInit {
         // Ukloni iz liste
         this.comments = this.comments.filter(c => c.id !== comment.id);
         this.totalComments--;
+
+        // NOVO - Obavesti parent komponentu da osvježi brojač! ❤️
+        this.commentDeleted.emit();
+        console.log('📤 Event commentDeleted emitovan!');
 
         alert('Komentar obrisan! 🗑️');
       },

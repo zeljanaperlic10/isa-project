@@ -5,15 +5,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * WatchParty - Model klasa za Watch Party sobu (3.15 zahtev)
- * 
- * FUNKCIONALNOST:
- * - Korisnik kreira sobu
- * - Drugi korisnici se pridružuju
- * - Kreator pokrene video → automatski se otvara kod svih
- * - Real-time komunikacija preko WebSocket-a
- */
+
 @Entity
 @Table(name = "watch_parties")
 public class WatchParty {
@@ -26,42 +18,28 @@ public class WatchParty {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    /**
-     * Naziv sobe
-     */
+    
     @Column(nullable = false, length = 200)
     private String name;
     
-    /**
-     * Kreator sobe (vlasnik)
-     */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
     
-    /**
-     * Trenutni video koji se gleda (može biti null)
-     */
+  
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "current_post_id")
     private Post currentPost;
     
-    /**
-     * Da li je soba aktivna
-     */
+    
     @Column(nullable = false)
     private Boolean active = true;
     
-    /**
-     * Vreme kreiranja
-     */
+    
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
-    /**
-     * Lista članova sobe (usernames)
-     * Čuvamo kao JSON string ili možemo koristiti @ElementCollection
-     */
+    
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "watch_party_members", joinColumns = @JoinColumn(name = "watch_party_id"))
     @Column(name = "username")

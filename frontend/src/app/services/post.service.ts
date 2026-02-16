@@ -24,10 +24,17 @@ export class PostService {
   }
 
   /**
-   * Dobija jedan post po ID-u
+   * Dobija jedan post po ID-u (sa view increment)
    */
   getPostById(id: number): Observable<Post> {
     return this.http.get<Post>(`${this.apiUrl}/posts/${id}`);
+  }
+
+  /**
+   * Dobija post BEZ incrementa view count-a (za refresh) - NOVO! 🔄
+   */
+  refreshPost(id: number): Observable<Post> {
+    return this.http.get<Post>(`${this.apiUrl}/posts/${id}/refresh`);
   }
 
   /**
@@ -52,6 +59,37 @@ export class PostService {
   }
 
   // ============================================
+  // LAJKOVANJE (LIKE/UNLIKE) ❤️
+  // ============================================
+
+  /**
+   * Lajkuje post
+   * @param postId - ID posta
+   * @returns Observable sa odgovorom servera
+   */
+  likePost(postId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/posts/${postId}/like`, {});
+  }
+
+  /**
+   * Uklanja lajk sa posta
+   * @param postId - ID posta
+   * @returns Observable sa odgovorom servera
+   */
+  unlikePost(postId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/posts/${postId}/like`);
+  }
+
+  /**
+   * Proverava da li je korisnik lajkovao post
+   * @param postId - ID posta
+   * @returns Observable sa statusom { postId, isLiked }
+   */
+  getLikeStatus(postId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/posts/${postId}/like/status`);
+  }
+
+  // ============================================
   // BROJAČ KOMENTARA (3.6 zahtev)
   // ============================================
 
@@ -62,8 +100,6 @@ export class PostService {
    * @param postId - ID posta
    */
   incrementCommentsCount(postId: number): void {
-    // Optimistički update - ažuriraj lokalno bez čekanja backend-a
-    // Backend će ovo uraditi automatski, ali za instant UI feedback
     console.log(`➕ Increment comments count za post ${postId}`);
   }
 
@@ -74,7 +110,6 @@ export class PostService {
    * @param postId - ID posta
    */
   decrementCommentsCount(postId: number): void {
-    // Optimistički update - ažuriraj lokalno
     console.log(`➖ Decrement comments count za post ${postId}`);
   }
 
@@ -105,8 +140,6 @@ export class PostService {
    * @param formData - FormData sa video, thumbnail, title, description, tags, geolokacija
    */
   createPost(formData: FormData): Observable<Post> {
-    // Napomena: Token se automatski dodaje preko HTTP Interceptor-a (kada ga napravimo)
-    // Za sada, AuthGuard sprečava pristup upload stranici ako nisi prijavljen
     return this.http.post<Post>(`${this.apiUrl}/posts`, formData);
   }
 

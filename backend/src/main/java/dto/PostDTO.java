@@ -31,6 +31,9 @@ public class PostDTO {
     private Integer commentsCount;
     private Integer viewsCount;
     
+    // NOVO - da li je trenutni korisnik lajkovao ovaj post ❤️
+    private boolean isLikedByCurrentUser;
+    
     // Vreme
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -75,13 +78,16 @@ public class PostDTO {
         this.commentsCount = post.getCommentsCount();
         this.viewsCount = post.getViewsCount();
         
+        // isLikedByCurrentUser - default false (biće setovan naknadno u servisu)
+        this.isLikedByCurrentUser = false;
+        
         // Vreme
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
     }
 
     // ============================================
-    // UGNEŽDENA KLASA - UserBasicDTO
+    // UGNEŽĐENA KLASA - UserBasicDTO
     // ============================================
     
     public static class UserBasicDTO {
@@ -232,6 +238,15 @@ public class PostDTO {
 
     public void setViewsCount(Integer viewsCount) {
         this.viewsCount = viewsCount;
+    }
+
+    // NOVO - getter i setter za isLikedByCurrentUser ❤️
+    public boolean isLikedByCurrentUser() {
+        return isLikedByCurrentUser;
+    }
+
+    public void setLikedByCurrentUser(boolean likedByCurrentUser) {
+        this.isLikedByCurrentUser = likedByCurrentUser;
     }
 
     public LocalDateTime getCreatedAt() {

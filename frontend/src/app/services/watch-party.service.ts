@@ -4,15 +4,12 @@ import { Observable, Subject } from 'rxjs';
 import { WatchParty, WatchPartyEvent, CreateRoomRequest, StartVideoRequest } from '../models/watch-party.model';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { AuthService } from '../auth/auth.service';  // ← DODATO!
 
 /**
  * WatchPartyService - Service za Watch Party funkcionalnost (3.15 zahtev)
  * 
- * KOMBINUJE:
- * 1. REST API pozive (HttpClient) - CRUD operacije
- * 2. WebSocket komunikaciju (SockJS + STOMP) - Real-time events
- * 
- * AŽURIRANO: Koristi @stomp/stompjs@7.0.0 (novi API)
+ * AŽURIRANO: Koristi AuthService za JWT token!
  */
 @Injectable({
   providedIn: 'root'
@@ -42,10 +39,13 @@ export class WatchPartyService {
   public events$ = this.eventsSubject.asObservable();
 
   // ============================================
-  // CONSTRUCTOR
+  // CONSTRUCTOR - AŽURIRANO SA AuthService!
   // ============================================
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService  // ← DODATO!
+  ) {
     console.log('🎬 WatchPartyService - Inicijalizacija');
   }
 
@@ -113,83 +113,116 @@ export class WatchPartyService {
   }
 
   // ============================================
-  // WEBSOCKET - KONEKCIJA (NOVI API)
+  // WEBSOCKET - KONEKCIJA (AŽURIRANO SA AuthService!)
   // ============================================
 
-  /**
-   * Konektuj se na WebSocket.
-   * 
-   * NOVI API (@stomp/stompjs@7.0.0):
-   * - Koristi Client klasu
-   * - webSocketFactory umesto direktnog socket-a
-   * - activate() umesto connect()
-   */
   connect(callback: () => void): void {
-    console.log('🔌 Konektovanje na WebSocket...');
+    console.log('='.repeat(80));
+    console.log('🔌 POKRETANJE WEBSOCKET KONEKCIJE...');
     console.log('   URL:', this.wsUrl);
+    console.log('='.repeat(80));
 
-    // Proveri da li je već konektovan
     if (this.isConnected && this.stompClient !== null) {
       console.log('⚠️ Već konektovan!');
       callback();
       return;
     }
 
-    // JWT token iz localStorage
-    const token = localStorage.getItem('token');
+    // ✅ KORISTI AuthService umesto localStorage!
+    const token = this.authService.token;
+    
+    if (!token) {
+      console.error('❌ Token nije pronađen u AuthService!');
+      console.error('   Da li ste prijavljeni?');
+      alert('Niste prijavljeni! Molimo prijavite se prvo.');
+      return;
+    }
 
-    // Kreiraj STOMP client (NOVI API)
+    console.log('✅ Token pronađen preko AuthService');
+    console.log('   Prvih 30 karaktera:', token.substring(0, 30) + '...');
+
+    // Kreiraj STOMP client
+    console.log('📦 Kreiram STOMP Client...');
+    
     this.stompClient = new Client({
-      // WebSocket factory - koristi SockJS
-      webSocketFactory: () => new SockJS(this.wsUrl) as any,
+      webSocketFactory: () => {
+        console.log('🏭 WebSocketFactory pozvan - kreiram SockJS...');
+        const sockjs = new SockJS(this.wsUrl);
+        
+        sockjs.onopen = () => {
+          console.log('✅ SockJS OPENED!');
+        };
+        
+        sockjs.onclose = (event) => {
+          console.log('🔌 SockJS CLOSED:', event);
+        };
+        
+        sockjs.onerror = (error) => {
+          console.error('❌ SockJS ERROR:', error);
+        };
+        
+        return sockjs as any;
+      },
       
-      // Headers sa JWT tokenom
       connectHeaders: {
         Authorization: 'Bearer ' + token
       },
       
-      // Debug (opciono)
       debug: (str) => {
-        // console.log('STOMP:', str);  // Zakomentiši za manje logova
+        console.log('🔵 STOMP:', str);
       },
       
-      // Reconnect opcije
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
       
-      // Callback za uspešnu konekciju
       onConnect: (frame) => {
-        console.log('✅ WebSocket konektovan!');
+        console.log('='.repeat(80));
+        console.log('✅✅✅ WEBSOCKET USPEŠNO KONEKTOVAN! ✅✅✅');
         console.log('   Frame:', frame);
+        console.log('='.repeat(80));
         
         this.isConnected = true;
         callback();
       },
       
-      // Callback za grešku
       onStompError: (frame) => {
-        console.error('❌ WebSocket greška:', frame);
+        console.error('='.repeat(80));
+        console.error('❌❌❌ STOMP GREŠKA! ❌❌❌');
+        console.error('   Command:', frame.command);
+        console.error('   Headers:', frame.headers);
+        console.error('   Body:', frame.body);
+        console.error('='.repeat(80));
         this.isConnected = false;
+        
+        alert('WebSocket STOMP greška! Proveri konzolu.');
       },
       
-      // Callback za WebSocket grešku
       onWebSocketError: (event) => {
-        console.error('❌ WebSocket konekcija greška:', event);
+        console.error('='.repeat(80));
+        console.error('❌❌❌ WEBSOCKET GREŠKA! ❌❌❌');
+        console.error('   Event:', event);
+        console.error('='.repeat(80));
+        this.isConnected = false;
+        
+        alert('WebSocket ne može da se konektuje! Da li je backend pokrenut?');
+      },
+      
+      onWebSocketClose: (event) => {
+        console.log('='.repeat(80));
+        console.log('🔌 WEBSOCKET ZATVOREN!');
+        console.log('   Code:', event.code);
+        console.log('   Reason:', event.reason);
+        console.log('='.repeat(80));
         this.isConnected = false;
       }
     });
 
-    // Aktiviraj konekciju (NOVO!)
+    console.log('🚀 Aktiviram STOMP Client...');
     this.stompClient.activate();
+    console.log('⏳ Čekam na konekciju...');
   }
 
-  /**
-   * Diskonektuj se sa WebSocket-a.
-   * 
-   * NOVI API:
-   * - deactivate() umesto disconnect()
-   */
   disconnect(): void {
     if (this.stompClient !== null && this.isConnected) {
       console.log('🔌 Diskonektovanje sa WebSocket-a...');
@@ -203,40 +236,42 @@ export class WatchPartyService {
   }
 
   // ============================================
-  // WEBSOCKET - SUBSCRIBE NA SOBU (NOVI API)
+  // WEBSOCKET - SUBSCRIBE NA SOBU
   // ============================================
 
-  /**
-   * Subscribe-uj se na WebSocket event-e za određenu sobu.
-   * 
-   * NOVI API:
-   * - subscribe() vraća Subscription objekat
-   * - message.body je automatski string
-   */
   subscribeToRoom(roomId: number): void {
     if (!this.isConnected || this.stompClient === null) {
       console.error('❌ WebSocket nije konektovan! Pozovi connect() prvo.');
       return;
     }
 
-    console.log('📡 Subscribe na sobu:', roomId);
+    console.log('='.repeat(80));
+    console.log('📡 SUBSCRIBE NA SOBU:', roomId);
+    console.log('='.repeat(80));
 
     this.currentRoomId = roomId;
 
-    // Subscribe na topic
     const topic = `/topic/watch-party/${roomId}`;
 
     this.stompClient.subscribe(topic, (message) => {
-      // Primljena poruka!
-      console.log('📨 WebSocket poruka primljena:', message);
+      console.log('='.repeat(80));
+      console.log('📨 WEBSOCKET PORUKA PRIMLJENA!');
+      console.log('   Topic:', topic);
+      console.log('   Body:', message.body);
+      console.log('='.repeat(80));
 
-      // Parse JSON
-      const event: WatchPartyEvent = JSON.parse(message.body);
+      try {
+        const event: WatchPartyEvent = JSON.parse(message.body);
+        
+        console.log('✅ Event parsiran:');
+        console.log('   Type:', event.type);
+        console.log('   Payload:', JSON.stringify(event, null, 2));
 
-      console.log('📨 Event:', event);
-
-      // Broadcast svim subscriber-ima!
-      this.eventsSubject.next(event);
+        this.eventsSubject.next(event);
+        
+      } catch (e) {
+        console.error('❌ Greška pri parsiranju JSON-a:', e);
+      }
     });
 
     console.log('✅ Subscribe-ovan na:', topic);
@@ -245,45 +280,39 @@ export class WatchPartyService {
   unsubscribeFromRoom(): void {
     console.log('📡 Unsubscribe sa sobe:', this.currentRoomId);
     this.currentRoomId = null;
-    // STOMP automatski unsubscribe-uje kada se deactivate() pozove
   }
 
   // ============================================
-  // WEBSOCKET - SLANJE PORUKA (NOVI API)
+  // WEBSOCKET - SLANJE PORUKA
   // ============================================
 
-  /**
-   * Kreator pokreće video.
-   * 
-   * NOVI API:
-   * - publish() umesto send()
-   * - Prima objekat sa destination i body
-   */
   startVideo(roomId: number, postId: number): void {
     if (!this.isConnected || this.stompClient === null) {
       console.error('❌ WebSocket nije konektovan!');
+      alert('WebSocket nije konektovan! Osvježi stranicu.');
       return;
     }
 
-    console.log('▶️ Pokretanje videa...');
+    console.log('='.repeat(80));
+    console.log('▶️ POKRETANJE VIDEA...');
     console.log('   Soba ID:', roomId);
     console.log('   Video ID:', postId);
 
     const destination = `/app/watch-party/${roomId}/start-video`;
     const body: StartVideoRequest = { postId };
 
-    // Publish (NOVO!)
+    console.log('   Destination:', destination);
+    console.log('   Body:', JSON.stringify(body));
+
     this.stompClient.publish({
       destination: destination,
       body: JSON.stringify(body)
     });
 
     console.log('✅ Start video poruka poslata!');
+    console.log('='.repeat(80));
   }
 
-  /**
-   * Notifikuj ostale članove da si se pridružio.
-   */
   notifyJoined(roomId: number): void {
     if (!this.isConnected || this.stompClient === null) {
       console.error('❌ WebSocket nije konektovan!');
@@ -294,7 +323,6 @@ export class WatchPartyService {
 
     const destination = `/app/watch-party/${roomId}/join`;
     
-    // Publish (NOVO!)
     this.stompClient.publish({
       destination: destination,
       body: JSON.stringify({})
@@ -303,9 +331,6 @@ export class WatchPartyService {
     console.log('✅ Join notifikacija poslata!');
   }
 
-  /**
-   * Notifikuj ostale članove da si napustio sobu.
-   */
   notifyLeft(roomId: number): void {
     if (!this.isConnected || this.stompClient === null) {
       console.error('❌ WebSocket nije konektovan!');
@@ -316,7 +341,6 @@ export class WatchPartyService {
 
     const destination = `/app/watch-party/${roomId}/leave`;
     
-    // Publish (NOVO!)
     this.stompClient.publish({
       destination: destination,
       body: JSON.stringify({})
@@ -326,11 +350,12 @@ export class WatchPartyService {
   }
 
   // ============================================
-  // HELPER METODE
+  // HELPER METODE - AŽURIRANO SA AuthService!
   // ============================================
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
+    // ✅ KORISTI AuthService umesto localStorage!
+    const token = this.authService.token;
 
     return new HttpHeaders({
       'Content-Type': 'application/json',

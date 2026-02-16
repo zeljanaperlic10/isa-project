@@ -78,6 +78,39 @@ export class VideoPlayerComponent implements OnInit {
   }
 
   // ============================================
+  // REFRESH POST (kada se doda/obriše komentar) - AŽURIRANO! 🔄
+  // ============================================
+
+  /**
+   * Osvježava post podatke (npr. nakon dodavanja/brisanja komentara)
+   * Poziva se kada comments komponenta emituje commentAdded ili commentDeleted event
+   */
+  refreshPost(): void {
+    if (!this.post) {
+      return;
+    }
+
+    console.log('🔄 Osvježavam post...');
+
+    // NOVO - koristi refresh endpoint (bez view increment)
+    this.postService.refreshPost(this.post.id).subscribe({
+      next: (post) => {
+        console.log('✅ Post osvježen - commentsCount:', post.commentsCount);
+        
+        // Ažuriraj samo brojače (ne ceo post da ne bi resetovao video)
+        if (this.post) {
+          this.post.commentsCount = post.commentsCount;
+          this.post.likesCount = post.likesCount;
+          this.post.viewsCount = post.viewsCount;
+        }
+      },
+      error: (err) => {
+        console.error('❌ Greška pri osvježavanju:', err);
+      }
+    });
+  }
+
+  // ============================================
   // PROCESIRANJE VIDEO URL-a
   // ============================================
 
@@ -116,18 +149,63 @@ export class VideoPlayerComponent implements OnInit {
   }
 
   // ============================================
-  // USER ACTIONS (lajk, komentar)
+  // LAJKOVANJE ❤️
   // ============================================
 
-  onLike(): void {
+  /**
+   * Toggle like/unlike za video (optimistički update)
+   */
+  toggleLike(): void {
+    // Provera da li je korisnik prijavljen
     if (!this.isLoggedIn) {
-      alert('Morate se prijaviti da biste lajkovali objavu! 😊');
+      alert('Morate biti prijavljeni da biste lajkovali video!');
+      this.router.navigate(['/login']);
       return;
     }
-    
-    // TODO: Implementirati lajk funkcionalnost
-    console.log('❤️ Like!');
+
+    if (!this.post) {
+      return;
+    }
+
+    // Optimistički UI update (odmah prikaži promenu)
+    const wasLiked = this.post.isLikedByCurrentUser;
+    this.post.isLikedByCurrentUser = !wasLiked;
+    this.post.likesCount += wasLiked ? -1 : 1;
+
+    // Poziv backend-a
+    const request$ = wasLiked 
+      ? this.postService.unlikePost(this.post.id)
+      : this.postService.likePost(this.post.id);
+
+    request$.subscribe({
+      next: (response) => {
+        console.log('✅ Like/Unlike uspešan:', response);
+        // Backend je potvrdio - sve OK!
+      },
+      error: (err) => {
+        console.error('❌ Greška pri like/unlike:', err);
+        
+        // Rollback optimističkog update-a
+        if (this.post) {
+          this.post.isLikedByCurrentUser = wasLiked;
+          this.post.likesCount += wasLiked ? 1 : -1;
+        }
+
+        // Provera da li je greška 401 (neautentifikovan)
+        if (err.status === 401) {
+          alert('Sesija je istekla. Molimo prijavite se ponovo.');
+          this.authService.logout();
+          this.router.navigate(['/login']);
+        } else {
+          alert('Greška pri lajkovanju. Pokušajte ponovo.');
+        }
+      }
+    });
   }
+
+  // ============================================
+  // USER ACTIONS
+  // ============================================
 
   onComment(): void {
     if (!this.isLoggedIn) {
@@ -135,8 +213,13 @@ export class VideoPlayerComponent implements OnInit {
       return;
     }
 
-    // TODO: Implementirati komentar funkcionalnost
-    console.log('💬 Comment!');
+    // Scroll do komentara
+    const commentsSection = document.querySelector('app-comments');
+    if (commentsSection) {
+      commentsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    console.log('💬 Scroll do komentara');
   }
 
   // ============================================

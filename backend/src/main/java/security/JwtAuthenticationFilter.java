@@ -20,12 +20,7 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-/**
- * JWT Authentication Filter - procesira JWT token iz Authorization header-a
- * i postavlja Authentication u SecurityContext
- * 
- * JJWT 0.12.3 API
- */
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -92,9 +87,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
-    /**
-     * Validira JWT token (JJWT 0.12.3 API)
-     */
+   
     private boolean validateToken(String token) {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
@@ -111,9 +104,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    /**
-     * Izvlači email (subject) iz JWT tokena (JJWT 0.12.3 API)
-     */
+    
     private String getEmailFromJwt(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         

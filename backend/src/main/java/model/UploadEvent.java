@@ -3,18 +3,7 @@ package model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * UploadEvent - Model klasa za video upload event (3.14 zahtev)
- * 
- * SADRŽI:
- * - Osnovne informacije o video-u
- * - Metapodatke (autor, vreme, veličina)
- * 
- * KORISTI SE ZA:
- * - JSON serijalizaciju (Jackson)
- * - Protobuf serijalizaciju (manual conversion)
- * - Slanje kroz RabbitMQ
- */
+
 public class UploadEvent implements Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -23,76 +12,50 @@ public class UploadEvent implements Serializable {
     // POLJA
     // ============================================
     
-    /**
-     * ID videa (Post ID)
-     */
+   
     private Long postId;
     
-    /**
-     * Naslov videa
-     */
+   
     private String title;
     
-    /**
-     * Opis videa (može biti null)
-     */
+    
     private String description;
     
-    /**
-     * Ime autora (username)
-     */
+    
     private String author;
     
-    /**
-     * Email autora
-     */
+    
     private String authorEmail;
     
-    /**
-     * URL videa
-     */
+    
     private String videoUrl;
     
-    /**
-     * URL thumbnail slike
-     */
+    
     private String thumbnailUrl;
     
-    /**
-     * Veličina fajla u bajtovima
-     */
+    
     private Long fileSize;
     
-    /**
-     * Trajanje videa u sekundama (može biti null)
-     */
+    
     private Integer duration;
     
-    /**
-     * Vreme kreiranja event-a
-     */
+    
     private LocalDateTime timestamp;
     
-    /**
-     * Event tip (npr: "VIDEO_UPLOADED")
-     */
+    
     private String eventType;
 
     // ============================================
     // KONSTRUKTORI
     // ============================================
     
-    /**
-     * Default konstruktor (potreban za Jackson JSON deserijalizaciju)
-     */
+    
     public UploadEvent() {
         this.timestamp = LocalDateTime.now();
         this.eventType = "VIDEO_UPLOADED";
     }
 
-    /**
-     * Konstruktor sa svim poljima
-     */
+    
     public UploadEvent(Long postId, String title, String description, 
                       String author, String authorEmail,
                       String videoUrl, String thumbnailUrl, 
@@ -206,9 +169,7 @@ public class UploadEvent implements Serializable {
     // POMOĆNE METODE
     // ============================================
 
-    /**
-     * Vraća čitljivu veličinu fajla (npr: "15.3 MB")
-     */
+    
     public String getReadableFileSize() {
         if (fileSize == null) {
             return "Unknown";
@@ -227,9 +188,7 @@ public class UploadEvent implements Serializable {
         }
     }
 
-    /**
-     * Vraća čitljivo trajanje (npr: "3:45")
-     */
+    
     public String getReadableDuration() {
         if (duration == null) {
             return "Unknown";

@@ -13,7 +13,7 @@ public interface WatchPartyRepository extends JpaRepository<WatchParty, Long> {
     
     List<WatchParty> findByCreatorUsernameOrderByCreatedAtDesc(String username);
     
-    // DODAJ OVO - traži po email-u:
+    
     @Query("SELECT wp FROM WatchParty wp WHERE wp.creator.email = :email ORDER BY wp.createdAt DESC")
     List<WatchParty> findByCreatorEmailOrderByCreatedAtDesc(@Param("email") String email);
     

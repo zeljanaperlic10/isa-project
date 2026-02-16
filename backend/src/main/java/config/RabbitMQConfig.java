@@ -64,16 +64,7 @@ public class RabbitMQConfig {
     // EXCHANGE - Rutira poruke
     // ============================================
     
-    /**
-     * Kreira Topic Exchange.
-     * Topic exchange podržava wildcard routing patterns.
-     * 
-     * Primer:
-     * - video.upload → ruta ka našem queue-u
-     * - video.delete → ne ruta (različit pattern)
-     * 
-     * @return TopicExchange instanca
-     */
+ 
     @Bean
     public TopicExchange uploadExchange() {
         System.out.println("🔧 Kreiranje RabbitMQ Exchange: " + UPLOAD_EXCHANGE);
@@ -84,21 +75,7 @@ public class RabbitMQConfig {
     // BINDING - Povezuje Exchange i Queue
     // ============================================
     
-    /**
-     * Vezuje queue za exchange pomoću routing key-a.
-     * 
-     * Tok:
-     * 1. Producer šalje poruku sa routing key: "video.upload"
-     * 2. Exchange prima poruku
-     * 3. Exchange proverava binding-e
-     * 4. Pronalazi match: "video.upload" → uploadQueue
-     * 5. Šalje poruku u uploadQueue
-     * 6. Consumer čita iz uploadQueue
-     * 
-     * @param queue - Destination queue
-     * @param exchange - Source exchange
-     * @return Binding objekat
-     */
+    
     @Bean
     public Binding binding(Queue queue, TopicExchange exchange) {
         System.out.println("🔧 Kreiranje Binding: " + UPLOAD_ROUTING_KEY);
@@ -112,18 +89,7 @@ public class RabbitMQConfig {
     // RABBIT TEMPLATE - Za slanje poruka
     // ============================================
     
-    /**
-     * RabbitTemplate sa JSON message converter-om.
-     * 
-     * Automatski konvertuje Java objekte u JSON format.
-     * 
-     * Primer:
-     * UploadEvent event = new UploadEvent(...);
-     * rabbitTemplate.convertAndSend(event); // Automatski → JSON
-     * 
-     * @param connectionFactory - Auto-injected
-     * @return RabbitTemplate sa JSON converter-om
-     */
+   
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
@@ -134,11 +100,7 @@ public class RabbitMQConfig {
         return template;
     }
 
-    /**
-     * JSON message converter (koristi Jackson library).
-     * 
-     * @return Jackson2JsonMessageConverter
-     */
+   
     @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();

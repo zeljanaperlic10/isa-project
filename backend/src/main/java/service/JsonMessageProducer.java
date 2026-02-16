@@ -6,22 +6,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * JsonMessageProducer - Šalje poruke u JSON formatu (3.14 zahtev)
- * 
- * KORISTI:
- * - RabbitTemplate (automatski konvertuje u JSON)
- * - Jackson library za serijalizaciju
- * 
- * PREDNOSTI JSON-a:
- * ✅ Human-readable (lako se čita)
- * ✅ Jednostavna integracija
- * ✅ Široko podržan
- * 
- * MANE JSON-a:
- * ❌ Veći payload (~500 bytes)
- * ❌ Sporija serijalizacija (~5ms)
- */
+
 @Service
 public class JsonMessageProducer {
 
@@ -32,25 +17,7 @@ public class JsonMessageProducer {
     // SLANJE PORUKA - JSON FORMAT
     // ============================================
 
-    /**
-     * Šalje UploadEvent poruku u JSON formatu.
-     * 
-     * PROCES:
-     * 1. UploadEvent objekat
-     * 2. RabbitTemplate automatski konvertuje u JSON (Jackson)
-     * 3. JSON poruka se šalje u RabbitMQ queue
-     * 
-     * PRIMER JSON OUTPUT:
-     * {
-     *   "postId": 123,
-     *   "title": "My Video",
-     *   "author": "petar",
-     *   "fileSize": 15728640,
-     *   "timestamp": "2026-01-29T23:30:00"
-     * }
-     * 
-     * @param event - UploadEvent objekat
-     */
+  
     public void sendMessage(UploadEvent event) {
         try {
             System.out.println("📤 JSON Producer - Slanje poruke...");
@@ -74,12 +41,7 @@ public class JsonMessageProducer {
         }
     }
 
-    /**
-     * Šalje poruku i vraća vreme serijalizacije (za testiranje).
-     * 
-     * @param event - UploadEvent objekat
-     * @return long - Vreme serijalizacije u nanosekundama
-     */
+    
     public long sendMessageWithTiming(UploadEvent event) {
         try {
             // Start timer
@@ -106,14 +68,7 @@ public class JsonMessageProducer {
         }
     }
 
-    /**
-     * Procenjuje veličinu JSON poruke.
-     * 
-     * NAPOMENA: Ovo je aproksimacija jer RabbitMQ dodatno enkoduje poruku.
-     * 
-     * @param event - UploadEvent objekat
-     * @return int - Veličina u bajtovima (aprox)
-     */
+   
     public int estimateMessageSize(UploadEvent event) {
         try {
             // Konvertuj u JSON string

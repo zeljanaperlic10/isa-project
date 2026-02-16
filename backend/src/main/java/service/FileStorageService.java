@@ -15,14 +15,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
-/**
- * Servis za čuvanje i učitavanje video i thumbnail fajlova.
- * 
- * Thumbnail slike se keširaju u memoriji (3.3 zahtev):
- * - Prvi put: čita sa file sistema
- * - Sledeći put: vraća iz cache-a (brže!)
- * - @Cacheable("thumbnails") anotacija
- */
+
 @Service
 public class FileStorageService {
 
@@ -142,22 +135,7 @@ public class FileStorageService {
     // UČITAVANJE THUMBNAIL SLIKE (sa kešom - 3.3 zahtev)
     // ============================================
     
-    /**
-     * Učitava thumbnail sliku sa keširanjem.
-     * 
-     * KAKO RADI CACHING:
-     * 1. Prvi zahtev: GET /api/thumbnails/abc-123.jpg
-     *    → Čita fajl sa diska
-     *    → Vraća Resource
-     *    → Čuva u cache pod ključem "abc-123.jpg"
-     * 
-     * 2. Drugi zahtev: GET /api/thumbnails/abc-123.jpg
-     *    → NE čita sa diska
-     *    → Vraća iz cache-a (BRŽE!)
-     * 
-     * 3. Cache se resetuje kada se aplikacija restartuje
-     *    (za trajni cache: koristiti Redis/Ehcache)
-     */
+   
     @org.springframework.cache.annotation.Cacheable(value = "thumbnails", key = "#fileName")
     public Resource loadThumbnailAsResource(String fileName) {
         try {

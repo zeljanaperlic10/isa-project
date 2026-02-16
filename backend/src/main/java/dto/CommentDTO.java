@@ -3,15 +3,7 @@ package dto;
 import model.Comment;
 import java.time.LocalDateTime;
 
-/**
- * CommentDTO - Data Transfer Object za komentare (3.6 zahtev)
- * 
- * Šalje se frontend-u sa samo potrebnim podacima:
- * - ID komentara
- * - Tekst
- * - Vreme kreiranja
- * - Username korisnika (ne ceo User objekat!)
- */
+
 public class CommentDTO {
 
     // ============================================
@@ -43,10 +35,7 @@ public class CommentDTO {
         this.createdAt = createdAt;
     }
 
-    /**
-     * Konstruktor koji kreira DTO iz Comment entiteta
-     * Ovo je "conversion constructor"
-     */
+   
     public CommentDTO(Comment comment) {
         this.id = comment.getId();
         this.text = comment.getText();

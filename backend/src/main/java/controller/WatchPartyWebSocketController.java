@@ -13,48 +13,14 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * WatchPartyWebSocketController - Real-time komunikacija (3.15 zahtev)
- * 
- * RAZLIKA: REST Controller vs WebSocket Controller
- * 
- * REST Controller:
- * - @RestController
- * - @PostMapping, @GetMapping
- * - Jedan zahtev → jedan odgovor
- * - Client mora slati zahtev da dobije update
- * 
- * WebSocket Controller:
- * - @Controller (ne @RestController!)
- * - @MessageMapping (za STOMP poruke)
- * - Konekcija ostaje otvorena
- * - Server PUSH-uje poruke klijentima
- * 
- * ENDPOINT-i:
- * - /app/watch-party/{roomId}/start-video  → Kreator pokreće video
- * - /app/watch-party/{roomId}/join         → Korisnik se pridružuje (WebSocket)
- * - /app/watch-party/{roomId}/leave        → Korisnik napušta (WebSocket)
- * 
- * BROADCAST DESTINACIJE:
- * - /topic/watch-party/{roomId}  → Svi članovi primaju poruku
- */
+
 @Controller
 public class WatchPartyWebSocketController {
 
     @Autowired
     private WatchPartyService watchPartyService;
 
-    /**
-     * SimpMessagingTemplate - Tool za slanje WebSocket poruka.
-     * 
-     * METODE:
-     * - convertAndSend(destination, payload) → Broadcast svima
-     * - convertAndSendToUser(user, dest, payload) → Šalji jednom korisniku
-     * 
-     * PRIMER:
-     * messagingTemplate.convertAndSend("/topic/watch-party/123", event);
-     * → Svi koji su subscribe-ovani na /topic/watch-party/123 primaju event!
-     */
+    
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
@@ -62,54 +28,7 @@ public class WatchPartyWebSocketController {
     // POKRETANJE VIDEA (GLAVNI FEATURE!)
     // ============================================
 
-    /**
-     * Kreator pokreće video u sobi.
-     * 
-     * WEBSOCKET TOK:
-     * 
-     * 1. Frontend (Kreator):
-     *    stompClient.send('/app/watch-party/123/start-video', {}, JSON.stringify({
-     *        postId: 10
-     *    }));
-     * 
-     * 2. Backend (ova metoda):
-     *    - Prima poruku
-     *    - Poziva Service da postavi currentPost
-     *    - BROADCAST event svim članovima sobe!
-     * 
-     * 3. Frontend (Svi članovi):
-     *    stompClient.subscribe('/topic/watch-party/123', (message) => {
-     *        const event = JSON.parse(message.body);
-     *        if (event.type === 'VIDEO_STARTED') {
-     *            router.navigate(['/video', event.postId]);  // Otvori video!
-     *        }
-     *    });
-     * 
-     * ANOTACIJE:
-     * - @MessageMapping - mapira STOMP poruku (kao @PostMapping za WebSocket)
-     * - @DestinationVariable - izvlači {roomId} iz URL-a
-     * - Principal - ulogovani korisnik (iz WebSocket sesije)
-     * 
-     * REQUEST PAYLOAD:
-     * {
-     *   "postId": 10
-     * }
-     * 
-     * BROADCAST PAYLOAD:
-     * {
-     *   "type": "VIDEO_STARTED",
-     *   "roomId": 123,
-     *   "postId": 10,
-     *   "postTitle": "My Video",
-     *   "videoUrl": "/api/videos/abc123.mp4",
-     *   "startedBy": "petar",
-     *   "timestamp": "2026-02-02T12:00:00"
-     * }
-     * 
-     * @param roomId - ID sobe (iz URL-a)
-     * @param payload - { "postId": 10 }
-     * @param principal - Ulogovani korisnik
-     */
+   
     @MessageMapping("/watch-party/{roomId}/start-video")
     public void startVideo(
             @DestinationVariable Long roomId,
@@ -167,44 +86,7 @@ public class WatchPartyWebSocketController {
     // PRIDRUŽIVANJE SOBI (WEBSOCKET NOTIFIKACIJA)
     // ============================================
 
-    /**
-     * Korisnik se pridružuje sobi - notifikacija ostalim članovima.
-     * 
-     * NAPOMENA:
-     * - Korisnik se PRVO pridružuje preko REST API-ja (POST /api/watch-party/{id}/join)
-     * - Zatim šalje WebSocket poruku da obavesti ostale
-     * 
-     * WEBSOCKET TOK:
-     * 
-     * 1. Frontend:
-     *    await http.post('/api/watch-party/123/join');  // REST - dodaj u bazu
-     *    stompClient.send('/app/watch-party/123/join', {});  // WebSocket - notifikuj ostale
-     * 
-     * 2. Backend (ova metoda):
-     *    - Prima poruku
-     *    - BROADCAST "USER_JOINED" event svim članovima
-     * 
-     * 3. Frontend (Ostali članovi):
-     *    stompClient.subscribe('/topic/watch-party/123', (message) => {
-     *        const event = JSON.parse(message.body);
-     *        if (event.type === 'USER_JOINED') {
-     *            console.log(event.username + ' se pridružio sobi!');
-     *            // Ažuriraj listu članova u UI
-     *        }
-     *    });
-     * 
-     * BROADCAST PAYLOAD:
-     * {
-     *   "type": "USER_JOINED",
-     *   "roomId": 123,
-     *   "username": "stefan",
-     *   "memberCount": 3,
-     *   "timestamp": "2026-02-02T12:00:00"
-     * }
-     * 
-     * @param roomId - ID sobe
-     * @param principal - Ulogovani korisnik
-     */
+    
     @MessageMapping("/watch-party/{roomId}/join")
     public void notifyUserJoined(
             @DestinationVariable Long roomId,
@@ -243,27 +125,7 @@ public class WatchPartyWebSocketController {
     // NAPUŠTANJE SOBE (WEBSOCKET NOTIFIKACIJA)
     // ============================================
 
-    /**
-     * Korisnik napušta sobu - notifikacija ostalim članovima.
-     * 
-     * TOK:
-     * 1. Frontend šalje WebSocket poruku
-     * 2. Backend broadcast-uje "USER_LEFT" event
-     * 3. Ostali članovi vide notifikaciju
-     * 4. Frontend zatim poziva REST API da ukloni iz baze
-     * 
-     * BROADCAST PAYLOAD:
-     * {
-     *   "type": "USER_LEFT",
-     *   "roomId": 123,
-     *   "username": "stefan",
-     *   "memberCount": 2,
-     *   "timestamp": "2026-02-02T12:00:00"
-     * }
-     * 
-     * @param roomId - ID sobe
-     * @param principal - Ulogovani korisnik
-     */
+   
     @MessageMapping("/watch-party/{roomId}/leave")
     public void notifyUserLeft(
             @DestinationVariable Long roomId,
@@ -297,24 +159,7 @@ public class WatchPartyWebSocketController {
     // ZATVARANJE SOBE (WEBSOCKET NOTIFIKACIJA)
     // ============================================
 
-    /**
-     * Kreator zatvara sobu - notifikacija svim članovima.
-     * 
-     * BROADCAST PAYLOAD:
-     * {
-     *   "type": "ROOM_CLOSED",
-     *   "roomId": 123,
-     *   "closedBy": "petar",
-     *   "timestamp": "2026-02-02T12:00:00"
-     * }
-     * 
-     * Frontend reakcija:
-     * - Prikaži poruku: "Soba je zatvorena od strane kreatora"
-     * - Redirect na homepage ili listu soba
-     * 
-     * @param roomId - ID sobe
-     * @param principal - Kreator (ulogovani korisnik)
-     */
+   
     @MessageMapping("/watch-party/{roomId}/close")
     public void notifyRoomClosed(
             @DestinationVariable Long roomId,

@@ -12,15 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * CommentController - REST API za komentare (3.6 zahtev)
- * 
- * ENDPOINT-I:
- * POST   /api/posts/{postId}/comments       - Kreiraj komentar (samo registrovani)
- * GET    /api/posts/{postId}/comments       - Dobij komentare (javno, paginacija)
- * DELETE /api/comments/{commentId}          - Obriši komentar (samo vlasnik)
- * GET    /api/comments/test                 - Test endpoint
- */
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -34,32 +26,7 @@ public class CommentController {
     // KREIRANJE KOMENTARA (3.6 - samo registrovani)
     // ============================================
     
-    /**
-     * Kreira novi komentar na postu.
-     * 
-     * ZAHTEVI (3.6):
-     * - Samo registrovani korisnici (JWT autentifikacija)
-     * - Rate limiting: 60 komentara po satu
-     * - Tekst obavezan
-     * 
-     * REQUEST BODY:
-     * {
-     *   "text": "Odličan video!"
-     * }
-     * 
-     * RESPONSE (201 CREATED):
-     * {
-     *   "id": 123,
-     *   "text": "Odličan video!",
-     *   "username": "petar123",
-     *   "createdAt": "2026-01-28T20:30:00"
-     * }
-     * 
-     * @param postId - ID posta
-     * @param requestBody - Map sa "text" poljem
-     * @param authentication - Automatski injektovan (iz JWT tokena)
-     * @return ResponseEntity<CommentDTO>
-     */
+   
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<?> createComment(
             @PathVariable Long postId,
@@ -127,42 +94,7 @@ public class CommentController {
     // DOBIJANJE KOMENTARA (3.6 - javno dostupno, paginacija)
     // ============================================
     
-    /**
-     * Vraća komentare za post sa paginacijom.
-     * 
-     * JAVNO DOSTUPNO (3.6):
-     * - I neautentifikovani korisnici mogu videti komentare
-     * 
-     * PAGINACIJA (3.6):
-     * - Query parametar: ?page=0 (default)
-     * - Vraća 20 komentara po stranici
-     * - Ukupno stranica i komentara u response-u
-     * 
-     * SORTIRANJE (3.6):
-     * - Najnoviji → najstariji
-     * 
-     * KEŠIRANJE (3.6):
-     * - @Cacheable u servisu
-     * 
-     * RESPONSE (200 OK):
-     * {
-     *   "content": [
-     *     { "id": 1, "text": "...", "username": "...", "createdAt": "..." },
-     *     { "id": 2, "text": "...", "username": "...", "createdAt": "..." }
-     *   ],
-     *   "totalElements": 287,
-     *   "totalPages": 15,
-     *   "number": 0,
-     *   "size": 20,
-     *   "first": true,
-     *   "last": false,
-     *   "numberOfElements": 20
-     * }
-     * 
-     * @param postId - ID posta
-     * @param page - Broj stranice (default 0)
-     * @return ResponseEntity<Page<CommentDTO>>
-     */
+   
     @GetMapping("/posts/{postId}/comments")
     public ResponseEntity<?> getComments(
             @PathVariable Long postId,
@@ -194,17 +126,7 @@ public class CommentController {
     // BRISANJE KOMENTARA (3.6 - samo vlasnik)
     // ============================================
     
-    /**
-     * Briše komentar.
-     * 
-     * ZAHTEVI (3.6):
-     * - Samo vlasnik može obrisati svoj komentar
-     * - JWT autentifikacija
-     * 
-     * @param commentId - ID komentara
-     * @param authentication - Automatski injektovan
-     * @return ResponseEntity<String>
-     */
+   
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<?> deleteComment(
             @PathVariable Long commentId,
@@ -253,12 +175,7 @@ public class CommentController {
     // HELPER METODE
     // ============================================
     
-    /**
-     * Kreira error response kao JSON objekat.
-     * 
-     * @param message - Error poruka
-     * @return Map<String, String>
-     */
+    
     private Map<String, String> createErrorResponse(String message) {
         Map<String, String> error = new HashMap<>();
         error.put("error", message);
