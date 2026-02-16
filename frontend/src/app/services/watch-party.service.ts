@@ -6,11 +6,7 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { AuthService } from '../auth/auth.service';  // ← DODATO!
 
-/**
- * WatchPartyService - Service za Watch Party funkcionalnost (3.15 zahtev)
- * 
- * AŽURIRANO: Koristi AuthService za JWT token!
- */
+
 @Injectable({
   providedIn: 'root'
 })

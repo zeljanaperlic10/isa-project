@@ -77,14 +77,7 @@ export class VideoPlayerComponent implements OnInit {
     });
   }
 
-  // ============================================
-  // REFRESH POST (kada se doda/obriše komentar) - AŽURIRANO! 🔄
-  // ============================================
-
-  /**
-   * Osvježava post podatke (npr. nakon dodavanja/brisanja komentara)
-   * Poziva se kada comments komponenta emituje commentAdded ili commentDeleted event
-   */
+  
   refreshPost(): void {
     if (!this.post) {
       return;

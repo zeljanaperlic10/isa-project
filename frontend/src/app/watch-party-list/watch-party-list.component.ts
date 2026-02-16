@@ -3,20 +3,7 @@ import { Router } from '@angular/router';
 import { WatchPartyService } from '../services/watch-party.service';
 import { WatchParty } from '../models/watch-party.model';
 
-/**
- * WatchPartyListComponent - Lista Watch Party soba (3.15 zahtev)
- * 
- * FUNKCIONALNOST:
- * - Prikazuje sve aktivne sobe
- * - Kreiranje nove sobe (modal)
- * - Pridruživanje sobi (klik)
- * - Tab-ovi: Aktivne sobe / Moje sobe / Pridružene sobe
- * 
- * LIFECYCLE:
- * 1. ngOnInit() - Učitaj aktivne sobe
- * 2. User klikne "Kreiraj sobu" → Otvori modal
- * 3. User klikne "Pridruži se" → joinRoom() → Router navigate
- */
+
 @Component({
   selector: 'app-watch-party-list',
   templateUrl: './watch-party-list.component.html',
@@ -24,28 +11,10 @@ import { WatchParty } from '../models/watch-party.model';
 })
 export class WatchPartyListComponent implements OnInit {
 
-  // ============================================
-  // STATE - Stanje komponente
-  // ============================================
-
-  /**
-   * Lista soba koja se prikazuje.
-   * 
-   * Zavisi od trenutnog tab-a:
-   * - activeTab === 'all' → Sve aktivne sobe
-   * - activeTab === 'my' → Sobe koje sam kreirao
-   * - activeTab === 'joined' → Sobe gde sam član
-   */
+ 
   rooms: WatchParty[] = [];
 
-  /**
-   * Trenutno aktivan tab.
-   * 
-   * VREDNOSTI:
-   * - 'all' → Sve sobe
-   * - 'my' → Moje sobe
-   * - 'joined' → Pridružene sobe
-   */
+ 
   activeTab: string = 'all';
 
   /**
@@ -58,12 +27,7 @@ export class WatchPartyListComponent implements OnInit {
    */
   errorMessage: string = '';
 
-  /**
-   * Modal za kreiranje sobe - da li je otvoren.
-   * 
-   * true → Modal je vidljiv
-   * false → Modal je sakriven
-   */
+  
   showCreateModal: boolean = false;
 
   /**
@@ -71,16 +35,10 @@ export class WatchPartyListComponent implements OnInit {
    */
   newRoomName: string = '';
 
-  /**
-   * Creating state - prikazuje spinner u modal-u dok se kreira soba.
-   */
+  
   creating: boolean = false;
 
-  /**
-   * Username trenutno ulogovanog korisnika.
-   * 
-   * Koristi se da bi znali da li je korisnik kreator sobe.
-   */
+  
   currentUsername: string = '';
 
   // ============================================
@@ -98,15 +56,7 @@ export class WatchPartyListComponent implements OnInit {
   // LIFECYCLE HOOKS
   // ============================================
 
-  /**
-   * ngOnInit - Angular lifecycle hook.
-   * 
-   * Poziva se JEDNOM kada se komponenta kreira.
-   * 
-   * PROCES:
-   * 1. Učitaj username iz localStorage
-   * 2. Učitaj aktivne sobe
-   */
+
   ngOnInit(): void {
     console.log('🎬 WatchPartyListComponent - ngOnInit');
 
@@ -117,29 +67,7 @@ export class WatchPartyListComponent implements OnInit {
     this.loadActiveRooms();
   }
 
-  // ============================================
-  // UČITAVANJE SOBA
-  // ============================================
-
-  /**
-   * Učitaj aktivne sobe sa Backend-a.
-   * 
-   * HTTP REQUEST:
-   * GET http://localhost:9090/api/watch-party/active
-   * 
-   * HTTP RESPONSE:
-   * [
-   *   { id: 123, name: "Movie Night", creator: {...}, members: [...] },
-   *   { id: 124, name: "Study Session", creator: {...}, members: [...] }
-   * ]
-   * 
-   * PROCES:
-   * 1. Postavi loading = true (prikaži spinner)
-   * 2. Pozovi Service
-   * 3. Primi sobe
-   * 4. Postavi rooms = primljene sobe
-   * 5. Postavi loading = false (sakrij spinner)
-   */
+ 
   loadActiveRooms(): void {
     console.log('📋 Učitavanje aktivnih soba...');
 
@@ -243,16 +171,7 @@ export class WatchPartyListComponent implements OnInit {
     }
   }
 
-  // ============================================
-  // KREIRANJE SOBE
-  // ============================================
-
-  /**
-   * Otvori modal za kreiranje sobe.
-   * 
-   * POZIV:
-   * <button (click)="openCreateModal()">+ Kreiraj sobu</button>
-   */
+ 
   openCreateModal(): void {
     console.log('📝 Otvaranje modal-a za kreiranje sobe...');
 
@@ -275,25 +194,7 @@ export class WatchPartyListComponent implements OnInit {
     this.errorMessage = '';
   }
 
-  /**
-   * Kreiraj novu sobu.
-   * 
-   * POZIV:
-   * <button (click)="createRoom()">Kreiraj</button>
-   * 
-   * PROCES:
-   * 1. Validacija naziva
-   * 2. Pozovi Service.createRoom()
-   * 3. Primi kreiranu sobu
-   * 4. Navigiraj u sobu (router.navigate)
-   * 
-   * HTTP REQUEST:
-   * POST http://localhost:9090/api/watch-party/create
-   * Body: { "name": "Movie Night" }
-   * 
-   * HTTP RESPONSE:
-   * { "id": 123, "name": "Movie Night", ... }
-   */
+  
   createRoom(): void {
     console.log('📝 Kreiranje sobe...');
     console.log('   Naziv:', this.newRoomName);

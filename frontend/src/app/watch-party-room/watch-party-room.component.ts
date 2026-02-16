@@ -101,17 +101,7 @@ export class WatchPartyRoomComponent implements OnInit, OnDestroy {
   // LIFECYCLE HOOKS
   // ============================================
 
-  /**
-   * ngOnInit - Angular lifecycle hook
-   * 
-   * PROCES:
-   * 1. Učitaj roomId iz URL-a
-   * 2. Učitaj username iz localStorage
-   * 3. Konektuj WebSocket
-   * 4. Učitaj sobu sa Backend-a
-   * 5. Subscribe na event-e
-   * 6. Notifikuj ostale da si se pridružio
-   */
+  
   ngOnInit(): void {
     console.log('🎬 WatchPartyRoomComponent - ngOnInit');
 
@@ -135,16 +125,7 @@ export class WatchPartyRoomComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * ngOnDestroy - Angular lifecycle hook
-   * 
-   * Poziva se kada se komponenta destroy-uje (korisnik napusti stranicu).
-   * 
-   * PROCES:
-   * 1. Notifikuj ostale da si napustio
-   * 2. Unsubscribe sa event-a
-   * 3. Disconnect WebSocket
-   */
+  
   ngOnDestroy(): void {
     console.log('🎬 WatchPartyRoomComponent - ngOnDestroy');
 
@@ -163,18 +144,7 @@ export class WatchPartyRoomComponent implements OnInit, OnDestroy {
     this.watchPartyService.disconnect();
   }
 
-  // ============================================
-  // WEBSOCKET
-  // ============================================
-
-  /**
-   * Konektuj se na WebSocket i subscribe na sobu.
-   * 
-   * PROCES:
-   * 1. Konektuj WebSocket (sa JWT tokenom)
-   * 2. Subscribe na /topic/watch-party/{roomId}
-   * 3. Slušaj event-e (VIDEO_STARTED, USER_JOINED, itd.)
-   */
+  
   connectWebSocket(): void {
     console.log('🔌 Konektovanje WebSocket...');
 
@@ -194,18 +164,7 @@ export class WatchPartyRoomComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Subscribe na WebSocket event-e.
-   * 
-   * PROCES:
-   * 1. Subscribe na events$ Observable
-   * 2. Reaguj na različite tipove event-a:
-   *    - VIDEO_STARTED → Otvori video!
-   *    - USER_JOINED → Prikaži notifikaciju
-   *    - USER_LEFT → Prikaži notifikaciju
-   *    - ROOM_CLOSED → Redirect na homepage
-   *    - ERROR → Prikaži error alert
-   */
+  
   subscribeToEvents(): void {
     console.log('📡 Subscribe na event-e...');
 
@@ -251,27 +210,7 @@ export class WatchPartyRoomComponent implements OnInit, OnDestroy {
     );
   }
 
-  // ============================================
-  // EVENT HANDLERS
-  // ============================================
-
-  /**
-   * VIDEO_STARTED event - Kreator je pokrenuo video!
-   * 
-   * EVENT PAYLOAD:
-   * {
-   *   type: "VIDEO_STARTED",
-   *   roomId: 123,
-   *   postId: 10,
-   *   postTitle: "My Video",
-   *   videoUrl: "/api/videos/abc.mp4",
-   *   startedBy: "petar"
-   * }
-   * 
-   * PROCES:
-   * 1. Ažuriraj room.currentPost u UI-u
-   * 2. AUTOMATSKI otvori video stranicu!
-   */
+ 
   onVideoStarted(event: WatchPartyEvent): void {
     console.log('🎬 VIDEO STARTED:', event);
 
@@ -361,23 +300,7 @@ export class WatchPartyRoomComponent implements OnInit, OnDestroy {
     );
   }
 
-  /**
-   * Učitaj dostupne videe sa Backend-a.
-   * 
-   * HTTP REQUEST:
-   * GET http://localhost:9090/api/posts
-   * 
-   * HTTP RESPONSE:
-   * [
-   *   { "id": 1, "title": "My Video", "videoUrl": "...", ... },
-   *   { "id": 2, "title": "Another Video", ... }
-   * ]
-   * 
-   * PROCES:
-   * 1. Pozovi PostService.getAllPosts()
-   * 2. Mapuj Post objekte u format za dropdown { id, title }
-   * 3. Postavi availableVideos
-   */
+ 
   loadAvailableVideos(): void {
     console.log('📋 Učitavanje dostupnih videa...');
 
@@ -434,14 +357,7 @@ export class WatchPartyRoomComponent implements OnInit, OnDestroy {
     console.log('✅ Start video poruka poslata!');
   }
 
-  /**
-   * Napusti sobu.
-   * 
-   * PROCES:
-   * 1. Notifikuj ostale (WebSocket)
-   * 2. Pozovi REST API (ukloni iz baze)
-   * 3. Redirect na homepage
-   */
+ 
   leaveRoom(): void {
     console.log('➖ Napuštanje sobe...');
 
@@ -490,24 +406,12 @@ export class WatchPartyRoomComponent implements OnInit, OnDestroy {
     );
   }
 
-  // ============================================
-  // HELPER METODE
-  // ============================================
-
-  /**
-   * Da li je korisnik kreator sobe.
-   */
+ 
   isCreator(): boolean {
     return this.room?.creator.username === this.currentUsername;
   }
 
-  /**
-   * Prikaži notifikaciju (toast).
-   * 
-   * NAPOMENA:
-   * - Ovo je jednostavna implementacija (alert ili console.log)
-   * - U realnoj aplikaciji koristi library kao što je ngx-toastr
-   */
+  
   showNotification(message: string): void {
     console.log('🔔 Notifikacija:', message);
     

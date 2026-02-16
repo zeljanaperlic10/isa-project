@@ -3,17 +3,7 @@ import { CommentService } from '../services/comment.service';
 import { AuthService } from '../auth/auth.service';
 import { Comment, CommentPage } from '../models/comment.model';
 
-/**
- * CommentsComponent - Komponenta za prikaz i kreiranje komentara (3.6 zahtev)
- * 
- * FUNKCIONALNOSTI:
- * - Prikaz komentara (javno - i neautentifikovani mogu videti)
- * - Forma za novi komentar (samo registrovani)
- * - Paginacija (Load More dugme)
- * - Brisanje komentara (samo vlasnik)
- * - Rate limiting handling (60/sat)
- * - Event emitovanje ka parent komponenti (za refresh brojača)
- */
+
 @Component({
   selector: 'app-comments',
   templateUrl: './comments.component.html',
@@ -27,16 +17,12 @@ export class CommentsComponent implements OnInit {
   
   @Input() postId!: number;
 
-  // ============================================
-  // OUTPUT - Eventi za parent komponentu (NOVO! ❤️)
-  // ============================================
+
   
   @Output() commentAdded = new EventEmitter<void>();
   @Output() commentDeleted = new EventEmitter<void>();
 
-  // ============================================
-  // KOMENTARI DATA
-  // ============================================
+ 
   
   comments: Comment[] = [];
   
@@ -102,9 +88,7 @@ export class CommentsComponent implements OnInit {
   // UČITAVANJE KOMENTARA (3.6 - paginacija)
   // ============================================
   
-  /**
-   * Učitava prvu stranicu komentara.
-   */
+  
   loadComments(): void {
     this.loading = true;
     this.error = '';
@@ -135,13 +119,7 @@ export class CommentsComponent implements OnInit {
     });
   }
 
-  /**
-   * Učitava sledeću stranicu komentara (Load More).
-   * 
-   * PAGINACIJA (3.6 zahtev):
-   * - Dodaje nove komentare na postojeću listu
-   * - "Infinite scroll" stil
-   */
+  
   loadMoreComments(): void {
     if (!this.hasMore || this.loadingMore) {
       return;
@@ -172,18 +150,7 @@ export class CommentsComponent implements OnInit {
     });
   }
 
-  // ============================================
-  // KREIRANJE KOMENTARA (3.6 - samo registrovani)
-  // ============================================
-  
-  /**
-   * Kreira novi komentar.
-   * 
-   * ZAHTEVI (3.6):
-   * - Samo registrovani (provera u HTML-u)
-   * - Rate limiting: 60 komentara po satu
-   * - Emituje event ka parent komponenti za refresh brojača
-   */
+
   submitComment(): void {
     // Validacija
     if (!this.newCommentText || this.newCommentText.trim().length === 0) {

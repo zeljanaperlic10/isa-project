@@ -63,7 +63,7 @@ export class AuthService {
       );
   }
 
-  // LOGOUT (POPRAVLJENO - briše i username!)
+  
   logout(): void {
     // Brisanje tokena i korisnika iz localStorage
     localStorage.removeItem('jwt_token');

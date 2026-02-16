@@ -3,14 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Comment, CommentPage, CreateCommentRequest } from '../models/comment.model';
 
-/**
- * CommentService - Servis za HTTP pozive ka Comment API-ju (3.6 zahtev)
- * 
- * FUNKCIONALNOSTI:
- * - Kreiranje komentara (POST)
- * - Dobijanje komentara sa paginacijom (GET)
- * - Brisanje komentara (DELETE)
- */
+
 @Injectable({
   providedIn: 'root'
 })

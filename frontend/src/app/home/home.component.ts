@@ -38,9 +38,7 @@ export class HomeComponent implements OnInit {
     this.loadPosts();
   }
 
-  // ============================================
-  // AUTHENTICATION METHODS
-  // ============================================
+
 
   checkAuthentication(): void {
     this.isLoggedIn = this.authService.isLoggedIn();
@@ -79,9 +77,7 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/profile', username]);
   }
 
-  // ============================================
-  // POST METHODS
-  // ============================================
+  
 
   loadPosts(): void {
     this.loading = true;
