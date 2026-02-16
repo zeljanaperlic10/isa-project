@@ -4,9 +4,19 @@ import { Observable, Subject } from 'rxjs';
 import { WatchParty, WatchPartyEvent, CreateRoomRequest, StartVideoRequest } from '../models/watch-party.model';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { AuthService } from '../auth/auth.service';  // ← DODATO!
+import { AuthService } from '../auth/auth.service';
 
-
+/**
+ * WatchPartyService - Service za Watch Party funkcionalnost (3.15 zahtev)
+ * 
+ * KOMBINUJE:
+ * 1. REST API pozive (HttpClient) - CRUD operacije
+ * 2. WebSocket komunikaciju (SockJS + STOMP) - Real-time events
+ * 
+ * AŽURIRANO: 
+ * - Koristi AuthService za JWT token
+ * - Šalje username u WebSocket payload-u
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -35,12 +45,12 @@ export class WatchPartyService {
   public events$ = this.eventsSubject.asObservable();
 
   // ============================================
-  // CONSTRUCTOR - AŽURIRANO SA AuthService!
+  // CONSTRUCTOR
   // ============================================
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService  // ← DODATO!
+    private authService: AuthService
   ) {
     console.log('🎬 WatchPartyService - Inicijalizacija');
   }
@@ -109,9 +119,12 @@ export class WatchPartyService {
   }
 
   // ============================================
-  // WEBSOCKET - KONEKCIJA (AŽURIRANO SA AuthService!)
+  // WEBSOCKET - KONEKCIJA
   // ============================================
 
+  /**
+   * Konektuj se na WebSocket.
+   */
   connect(callback: () => void): void {
     console.log('='.repeat(80));
     console.log('🔌 POKRETANJE WEBSOCKET KONEKCIJE...');
@@ -279,9 +292,14 @@ export class WatchPartyService {
   }
 
   // ============================================
-  // WEBSOCKET - SLANJE PORUKA
+  // WEBSOCKET - SLANJE PORUKA (AŽURIRANO!)
   // ============================================
 
+  /**
+   * Kreator pokreće video.
+   * 
+   * AŽURIRANO: Šalje username u payload-u!
+   */
   startVideo(roomId: number, postId: number): void {
     if (!this.isConnected || this.stompClient === null) {
       console.error('❌ WebSocket nije konektovan!');
@@ -289,13 +307,28 @@ export class WatchPartyService {
       return;
     }
 
+    // ✅ DOBIJ USERNAME
+    const username = localStorage.getItem('username');
+    
+    if (!username) {
+      console.error('❌ Username nije pronađen u localStorage!');
+      alert('Niste prijavljeni! Prijavite se ponovo.');
+      return;
+    }
+
     console.log('='.repeat(80));
     console.log('▶️ POKRETANJE VIDEA...');
     console.log('   Soba ID:', roomId);
     console.log('   Video ID:', postId);
+    console.log('   Username:', username);
 
     const destination = `/app/watch-party/${roomId}/start-video`;
-    const body: StartVideoRequest = { postId };
+    
+    // ✅ DODAJ USERNAME U PAYLOAD!
+    const body: StartVideoRequest = { 
+      postId: postId,
+      username: username
+    };
 
     console.log('   Destination:', destination);
     console.log('   Body:', JSON.stringify(body));
@@ -309,48 +342,77 @@ export class WatchPartyService {
     console.log('='.repeat(80));
   }
 
+  /**
+   * Notifikuj ostale članove da si se pridružio.
+   * 
+   * AŽURIRANO: Šalje username u payload-u!
+   */
   notifyJoined(roomId: number): void {
     if (!this.isConnected || this.stompClient === null) {
       console.error('❌ WebSocket nije konektovan!');
       return;
     }
 
+    // ✅ DOBIJ USERNAME
+    const username = localStorage.getItem('username');
+    
+    if (!username) {
+      console.error('❌ Username nije pronađen!');
+      return;
+    }
+
     console.log('➕ Notifikacija: Pridružen sobi', roomId);
+    console.log('   Username:', username);
 
     const destination = `/app/watch-party/${roomId}/join`;
     
+    // ✅ DODAJ USERNAME U PAYLOAD!
     this.stompClient.publish({
       destination: destination,
-      body: JSON.stringify({})
+      body: JSON.stringify({ username: username })
     });
 
     console.log('✅ Join notifikacija poslata!');
   }
 
+  /**
+   * Notifikuj ostale članove da si napustio sobu.
+   * 
+   * AŽURIRANO: Šalje username u payload-u!
+   */
   notifyLeft(roomId: number): void {
     if (!this.isConnected || this.stompClient === null) {
       console.error('❌ WebSocket nije konektovan!');
       return;
     }
 
+    // ✅ DOBIJ USERNAME
+    const username = localStorage.getItem('username');
+    
+    if (!username) {
+      console.error('❌ Username nije pronađen!');
+      return;
+    }
+
     console.log('➖ Notifikacija: Napuštena soba', roomId);
+    console.log('   Username:', username);
 
     const destination = `/app/watch-party/${roomId}/leave`;
     
+    // ✅ DODAJ USERNAME U PAYLOAD!
     this.stompClient.publish({
       destination: destination,
-      body: JSON.stringify({})
+      body: JSON.stringify({ username: username })
     });
 
     console.log('✅ Leave notifikacija poslata!');
   }
 
   // ============================================
-  // HELPER METODE - AŽURIRANO SA AuthService!
+  // HELPER METODE
   // ============================================
 
   private getAuthHeaders(): HttpHeaders {
-    // ✅ KORISTI AuthService umesto localStorage!
     const token = this.authService.token;
 
     return new HttpHeaders({

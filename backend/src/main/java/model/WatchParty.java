@@ -1,11 +1,16 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-
+/**
+ * WatchParty entity - Soba za grupno gledanje videa (3.15 zahtev)
+ * 
+ * AŽURIRANO: Dodato @JsonIgnoreProperties da spreči kružne reference!
+ */
 @Entity
 @Table(name = "watch_parties")
 public class WatchParty {
@@ -18,27 +23,26 @@ public class WatchParty {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    
     @Column(nullable = false, length = 200)
     private String name;
     
+    // ✅ DODATO: @JsonIgnoreProperties da spreči kružne reference!
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "creator_id", nullable = false)
+    @JsonIgnoreProperties({"posts", "watchParties", "password", "roles", "enabled"})
     private User creator;
     
-  
+    // ✅ DODATO: @JsonIgnoreProperties da spreči kružne reference!
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "current_post_id")
+    @JsonIgnoreProperties({"user", "comments", "likes", "watchParties"})
     private Post currentPost;
-    
     
     @Column(nullable = false)
     private Boolean active = true;
     
-    
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    
     
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "watch_party_members", joinColumns = @JoinColumn(name = "watch_party_id"))

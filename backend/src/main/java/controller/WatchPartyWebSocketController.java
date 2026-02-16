@@ -9,18 +9,20 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * WatchPartyWebSocketController - WebSocket kontroler za Watch Party (3.15 zahtev)
+ * 
+ * AŽURIRANO: Ne koristi Principal parametar, već čita username iz payload-a!
+ */
 @Controller
 public class WatchPartyWebSocketController {
 
     @Autowired
     private WatchPartyService watchPartyService;
 
-    
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
@@ -28,23 +30,41 @@ public class WatchPartyWebSocketController {
     // POKRETANJE VIDEA (GLAVNI FEATURE!)
     // ============================================
 
-   
+    /**
+     * Pokretanje videa u Watch Party sobi.
+     * 
+     * AŽURIRANO: Username se čita iz payload-a, ne iz Principal-a!
+     * 
+     * Client šalje:
+     * /app/watch-party/123/start-video
+     * { "postId": 10, "username": "marko@example.com" }
+     * 
+     * Server broadcast-uje:
+     * /topic/watch-party/123
+     * { "type": "VIDEO_STARTED", "roomId": 123, "postId": 10, ... }
+     */
     @MessageMapping("/watch-party/{roomId}/start-video")
     public void startVideo(
             @DestinationVariable Long roomId,
-            Map<String, Object> payload,
-            Principal principal) {
+            Map<String, Object> payload) {
         
         try {
             System.out.println("=".repeat(80));
             System.out.println("🎬 WebSocket: START VIDEO");
             System.out.println("   Soba ID: " + roomId);
-            System.out.println("   Korisnik: " + principal.getName());
             System.out.println("   Payload: " + payload);
             System.out.println("=".repeat(80));
 
-            String username = principal.getName();
+            // ✅ ČITAJ USERNAME IZ PAYLOAD-A
+            String username = (String) payload.get("username");
             Long postId = Long.valueOf(payload.get("postId").toString());
+            
+            if (username == null || username.isEmpty()) {
+                throw new RuntimeException("Username nije prosleđen u payload-u!");
+            }
+
+            System.out.println("   Username: " + username);
+            System.out.println("   Post ID: " + postId);
 
             // Pozovi Service - postavi trenutni video
             WatchParty party = watchPartyService.startVideo(roomId, postId, username);
@@ -73,9 +93,10 @@ public class WatchPartyWebSocketController {
             System.err.println("❌ Greška pri pokretanju videa: " + e.getMessage());
             e.printStackTrace();
 
-            // Pošalji error poruku korisniku
+            // Pošalji error poruku
             Map<String, Object> errorEvent = new HashMap<>();
             errorEvent.put("type", "ERROR");
+            errorEvent.put("roomId", roomId);
             errorEvent.put("message", e.getMessage());
 
             messagingTemplate.convertAndSend("/topic/watch-party/" + roomId, errorEvent);
@@ -86,18 +107,23 @@ public class WatchPartyWebSocketController {
     // PRIDRUŽIVANJE SOBI (WEBSOCKET NOTIFIKACIJA)
     // ============================================
 
-    
+    /**
+     * Notifikacija da se korisnik pridružio sobi.
+     * 
+     * AŽURIRANO: Username se čita iz payload-a!
+     */
     @MessageMapping("/watch-party/{roomId}/join")
     public void notifyUserJoined(
             @DestinationVariable Long roomId,
-            Principal principal) {
+            Map<String, Object> payload) {
         
         try {
+            // ✅ ČITAJ USERNAME IZ PAYLOAD-A
+            String username = (String) payload.get("username");
+            
             System.out.println("➕ WebSocket: USER JOINED");
             System.out.println("   Soba ID: " + roomId);
-            System.out.println("   Korisnik: " + principal.getName());
-
-            String username = principal.getName();
+            System.out.println("   Korisnik: " + username);
 
             // Učitaj sobu (da dobijemo broj članova)
             WatchParty party = watchPartyService.getRoomById(roomId);
@@ -125,18 +151,23 @@ public class WatchPartyWebSocketController {
     // NAPUŠTANJE SOBE (WEBSOCKET NOTIFIKACIJA)
     // ============================================
 
-   
+    /**
+     * Notifikacija da je korisnik napustio sobu.
+     * 
+     * AŽURIRANO: Username se čita iz payload-a!
+     */
     @MessageMapping("/watch-party/{roomId}/leave")
     public void notifyUserLeft(
             @DestinationVariable Long roomId,
-            Principal principal) {
+            Map<String, Object> payload) {
         
         try {
+            // ✅ ČITAJ USERNAME IZ PAYLOAD-A
+            String username = (String) payload.get("username");
+            
             System.out.println("➖ WebSocket: USER LEFT");
             System.out.println("   Soba ID: " + roomId);
-            System.out.println("   Korisnik: " + principal.getName());
-
-            String username = principal.getName();
+            System.out.println("   Korisnik: " + username);
 
             // Pripremi broadcast event
             Map<String, Object> event = new HashMap<>();
@@ -159,18 +190,23 @@ public class WatchPartyWebSocketController {
     // ZATVARANJE SOBE (WEBSOCKET NOTIFIKACIJA)
     // ============================================
 
-   
+    /**
+     * Notifikacija da je soba zatvorena.
+     * 
+     * AŽURIRANO: Username se čita iz payload-a!
+     */
     @MessageMapping("/watch-party/{roomId}/close")
     public void notifyRoomClosed(
             @DestinationVariable Long roomId,
-            Principal principal) {
+            Map<String, Object> payload) {
         
         try {
+            // ✅ ČITAJ USERNAME IZ PAYLOAD-A
+            String username = (String) payload.get("username");
+            
             System.out.println("🚫 WebSocket: ROOM CLOSED");
             System.out.println("   Soba ID: " + roomId);
-            System.out.println("   Kreator: " + principal.getName());
-
-            String username = principal.getName();
+            System.out.println("   Kreator: " + username);
 
             // Pripremi broadcast event
             Map<String, Object> event = new HashMap<>();

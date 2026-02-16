@@ -1,5 +1,6 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -17,6 +18,8 @@ public class User {
     @Column(unique = true, nullable = false, length = 100)
     private String email;
 
+    // ✅ DODATO - Password ne treba da se serializuje u JSON!
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 

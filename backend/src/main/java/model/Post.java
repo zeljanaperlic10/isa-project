@@ -1,5 +1,6 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -14,22 +15,22 @@ public class Post {
     private Long id;
 
     // ============================================
-    // KORISNIK (Many-to-One)
+    // KORISNIK (Many-to-One) - AŽURIRANO!
     // ============================================
     
+    // ✅ DODATO - Ignoriši kružne reference u User-u!
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"password", "address", "activated", "enabled", "createdAt", "updatedAt"})
     private User user;
 
     // ============================================
     // OSNOVNI PODACI
     // ============================================
     
-    // Naslov videa (obavezno)
     @Column(nullable = false, length = 200)
     private String title;
 
-    // Opis videa (opciono)
     @Column(length = 1000)
     private String description;
 
@@ -37,52 +38,45 @@ public class Post {
     // VIDEO I THUMBNAIL
     // ============================================
     
-    // URL/putanja do video fajla
     @Column(nullable = false, length = 500)
     private String videoUrl;
 
-    // URL/putanja do thumbnail slike
     @Column(nullable = false, length = 500)
     private String thumbnailUrl;
 
-    // Originalno ime video fajla
     @Column(length = 255)
     private String videoFileName;
 
-    // Veličina fajla u bajtovima
     @Column
     private Long fileSize;
 
-    // Trajanje videa u sekundama
     @Column
     private Integer duration;
 
     // ============================================
-    // TAGOVI (Many-to-Many) - 3.3 zahtev
+    // TAGOVI (Many-to-Many) - AŽURIRANO!
     // ============================================
     
-    
+    // ✅ DODATO - Ignoriši kružne reference u Tag-u!
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(
         name = "post_tags",
         joinColumns = @JoinColumn(name = "post_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
+    @JsonIgnoreProperties({"posts"})
     private Set<Tag> tags = new HashSet<>();
 
     // ============================================
-    // GEOGRAFSKA LOKACIJA (opciono) - 3.3 zahtev
+    // GEOGRAFSKA LOKACIJA (opciono)
     // ============================================
     
-    // Geografska širina (latitude)
     @Column
     private Double latitude;
 
-    // Geografska dužina (longitude)
     @Column
     private Double longitude;
 
-   
     @Column(length = 200)
     private String locationName;
 
@@ -90,20 +84,17 @@ public class Post {
     // STATISTIKA
     // ============================================
     
-    // Broj lajkova
     @Column(nullable = false)
     private Integer likesCount = 0;
 
-    // Broj komentara
     @Column(nullable = false)
     private Integer commentsCount = 0;
 
-    // Broj pregleda (za statistiku)
     @Column(nullable = false)
     private Integer viewsCount = 0;
 
     // ============================================
-    // VREME KREIRANJA (sistemsko) - 3.3 zahtev
+    // VREME KREIRANJA (sistemsko)
     // ============================================
     
     @Column(nullable = false, updatable = false)
@@ -141,13 +132,11 @@ public class Post {
     // POMOĆNE METODE ZA TAGOVE
     // ============================================
     
-    // Dodavanje taga
     public void addTag(Tag tag) {
         this.tags.add(tag);
         tag.getPosts().add(this);
     }
 
-    // Uklanjanje taga
     public void removeTag(Tag tag) {
         this.tags.remove(tag);
         tag.getPosts().remove(this);
