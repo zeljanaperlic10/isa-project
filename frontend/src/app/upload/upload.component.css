@@ -1,376 +1,411 @@
-/* ============================================ */
-/* NAVBAR */
-/* ============================================ */
-.navbar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 1rem 0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
 }
 
-.navbar .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
+/* ============================================ */
+/* UPLOAD CONTAINER */
+/* ============================================ */
+.upload-container {
+  min-height: 100vh;
+  background: #111111;
+  padding: 2rem;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
 }
 
-.logo h1 {
-  color: white;
-  font-size: 1.8rem;
-  margin: 0;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.welcome-text {
-  color: white;
-  font-weight: 500;
-  margin-right: 1rem;
-}
-
 /* ============================================ */
-/* BUTTONS */
+/* HEADER */
 /* ============================================ */
-.btn-primary {
-  background-color: #ff4d4f;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-  background-color: #d43f3f;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
-}
-
-.btn-secondary {
-  background-color: white;
-  color: #667eea;
-  border: 2px solid white;
-  padding: 0.6rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-secondary:hover {
-  background-color: transparent;
-  color: white;
-  transform: translateY(-2px);
-}
-
-/* Upload dugme u navbar-u (3.3 zahtev - #ff4d4f) */
-.btn-upload {
-  background-color: #ff4d4f;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
-}
-
-.btn-upload:hover {
-  background-color: #d43f3f;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.4);
-}
-
-/* ============================================ */
-/* MAIN CONTENT */
-/* ============================================ */
-.main-content {
-  min-height: calc(100vh - 80px);
-  background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
-  padding: 2rem 0;
-}
-
-.main-content .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-/* ============================================ */
-/* LOADING */
-/* ============================================ */
-.loading {
+.upload-header {
   text-align: center;
-  padding: 4rem 0;
+  margin-bottom: 2rem;
 }
 
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #667eea;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
+.upload-header h1 {
+  color: #eeeeee;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.5px;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.upload-header p {
+  color: #555555;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* ============================================ */
+/* SUCCESS MESSAGE */
+/* ============================================ */
+.success-message {
+  background: #1a2a1a;
+  border: 1px solid #2a4a2a;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  max-width: 760px;
+  width: 100%;
+}
+
+.success-message h2 {
+  color: #4caf50;
+  margin: 0 0 0.5rem 0;
+}
+
+.success-message p {
+  color: #666666;
+  margin: 0;
+}
+
+/* ============================================ */
+/* UPLOAD FORM */
+/* ============================================ */
+.upload-form {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 
 /* ============================================ */
 /* ERROR MESSAGE */
 /* ============================================ */
 .error-message {
-  text-align: center;
-  padding: 3rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.error-message p {
-  color: #ff4d4f;
-  font-size: 1.1rem;
-  margin-bottom: 1.5rem;
-}
-
-/* ============================================ */
-/* POSTS GRID */
-/* ============================================ */
-.posts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-/* ============================================ */
-/* POST CARD */
-/* ============================================ */
-.post-card {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.post-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-/* ============================================ */
-/* THUMBNAIL (SA CRVENIM BORDER-OM - 3.1 zahtev) */
-/* ============================================ */
-.thumbnail-container {
-  position: relative;
-  width: 100%;
-  padding-top: 56.25%; /* 16:9 aspect ratio */
-  overflow: hidden;
-  background: #000;
-  
-  /* CRVENI BORDER - 3.1 ZAHTEV */
-  border: 4px solid #ff4d4f;
-}
-
-.thumbnail {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.post-card:hover .thumbnail {
-  transform: scale(1.05);
-}
-
-/* ============================================ */
-/* CRVENA TAČKA (VIDEO INDIKATOR - 3.1 zahtev) */
-/* ============================================ */
-.video-indicator {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 16px;
-  height: 16px;
-  background-color: #ff4d4f;
-  border-radius: 50%;
-  border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.8;
-  }
-}
-
-/* ============================================ */
-/* POST INFO */
-/* ============================================ */
-.post-info {
-  padding: 1.2rem;
-}
-
-.post-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 0.8rem 0;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* ============================================ */
-/* POST META (korisnik i vreme) */
-/* ============================================ */
-.post-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  background: #2a1a1a;
+  border: 1px solid #3a2a2a;
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  color: #e53935;
   font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 0.8rem;
-}
-
-.username {
-  font-weight: 600;
-  color: #667eea;
-}
-
-.separator {
-  color: #ccc;
-}
-
-.date {
-  color: #999;
-}
-
-/* ============================================ */
-/* TAGOVI */
-/* ============================================ */
-.post-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.8rem;
-}
-
-.tag {
-  background: #f0f0f0;
-  color: #667eea;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
   font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.tag:hover {
-  background: #667eea;
-  color: white;
 }
 
 /* ============================================ */
-/* STATISTIKA */
+/* FORM SECTION */
 /* ============================================ */
-.post-stats {
-  display: flex;
-  gap: 1.5rem;
-  padding-top: 0.8rem;
-  border-top: 1px solid #f0f0f0;
-  margin-bottom: 0.5rem;
+.form-section {
+  background: #1a1a1a;
+  border: 1px solid #242424;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: border-color 0.2s ease;
 }
 
-.stat {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.9rem;
-  color: #666;
+.form-section:focus-within {
+  border-color: #e53935;
 }
 
-.stat .icon {
-  font-size: 1rem;
-}
-
-/* ============================================ */
-/* LOKACIJA */
-/* ============================================ */
-.post-location {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
+.section-title {
+  display: block;
+  color: #888888;
   font-size: 0.85rem;
-  color: #999;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* ============================================ */
+/* FILE INPUT */
+/* ============================================ */
+.file-input-wrapper {
+  position: relative;
+}
+
+.file-input-wrapper input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.file-input-label {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 1.5rem;
+  background: #222222;
+  border: 2px dashed #333333;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #888888;
+  font-size: 0.95rem;
+}
+
+.file-input-label:hover:not(.disabled) {
+  border-color: #e53935;
+  color: #eeeeee;
+  background: #252525;
+}
+
+.file-input-label.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.file-input-label .icon {
+  font-size: 1.5rem;
+}
+
+/* ============================================ */
+/* INPUT ERROR */
+/* ============================================ */
+.input-error {
+  color: #e53935;
+  font-size: 0.82rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+/* ============================================ */
+/* VIDEO PREVIEW */
+/* ============================================ */
+.video-preview {
+  margin-top: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #2a2a2a;
+}
+
+.video-preview video {
+  width: 100%;
+  max-height: 300px;
+  display: block;
+  background: #000;
+}
+
+/* ============================================ */
+/* THUMBNAIL PREVIEW */
+/* ============================================ */
+.thumbnail-preview {
+  margin-top: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #2a2a2a;
+}
+
+.thumbnail-preview img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ============================================ */
+/* TEXT INPUT */
+/* ============================================ */
+.text-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: #222222;
+  border: 1.5px solid #2a2a2a;
+  border-radius: 8px;
+  color: #eeeeee;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.text-input::placeholder {
+  color: #444444;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: #e53935;
+  background: #252525;
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+}
+
+.text-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================ */
+/* CHAR COUNT & HINT */
+/* ============================================ */
+.char-count {
+  text-align: right;
+  font-size: 0.8rem;
+  color: #444444;
+  margin-top: 0.4rem;
+}
+
+.hint {
+  font-size: 0.82rem;
+  color: #444444;
   margin-top: 0.5rem;
 }
 
 /* ============================================ */
-/* EMPTY STATE */
+/* LOCATION ROW */
 /* ============================================ */
-.empty-state {
-  text-align: center;
-  padding: 4rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.location-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
-.empty-state p {
-  font-size: 1.2rem;
-  color: #999;
+.location-row .text-input {
+  flex: 1;
+}
+
+.btn-location {
+  background: #222222;
+  border: 1.5px solid #333333;
+  color: #888888;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-location:hover:not(:disabled) {
+  border-color: #e53935;
+  color: white;
+}
+
+.btn-location:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.coordinates {
+  margin-top: 0.5rem;
+  color: #555555;
+  font-size: 0.82rem;
+}
+
+/* ============================================ */
+/* FORM ACTIONS */
+/* ============================================ */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1.5px solid #333333;
+  color: #888888;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  border-color: #555555;
+  color: #cccccc;
+}
+
+.btn-cancel:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-upload {
+  background: #e53935;
+  color: white;
+  border: none;
+  padding: 0.8rem 2.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-upload:hover:not(:disabled) {
+  background: #c62828;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(229, 57, 53, 0.35);
+}
+
+.btn-upload:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================ */
+/* PROGRESS BAR */
+/* ============================================ */
+.upload-progress {
+  margin-top: 0.5rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #222222;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #e53935;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  text-align: center;
+  color: #555555;
+  font-size: 0.85rem;
+  margin-top: 0.8rem;
 }
 
 /* ============================================ */
 /* RESPONSIVE */
 /* ============================================ */
 @media (max-width: 768px) {
-  .navbar .container {
+  .upload-container {
+    padding: 1rem;
+  }
+
+  .upload-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .form-section {
+    padding: 1.2rem;
+  }
+
+  .location-row {
     flex-direction: column;
-    gap: 1rem;
   }
 
-  .posts-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .nav-links {
+  .btn-location {
     width: 100%;
-    justify-content: center;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancel,
+  .btn-upload {
+    width: 100%;
+    text-align: center;
   }
 }

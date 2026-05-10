@@ -1,158 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ============================================ */
+/* CONTAINER */
+/* ============================================ */
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #111111;
   padding: 20px;
 }
 
+/* ============================================ */
+/* CARD */
+/* ============================================ */
 .register-card {
-  background: white;
+  background: #1a1a1a;
   padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   max-width: 500px;
   width: 100%;
+  border: 1px solid #242424;
 }
 
-h2 {
+.register-card h2 {
+  color: #ffffff;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 2rem 0;
   text-align: center;
-  color: #333;
-  margin-bottom: 30px;
-  font-size: 28px;
+  letter-spacing: -0.5px;
 }
 
-/* Alert poruke */
+/* ============================================ */
+/* ALERTS */
+/* ============================================ */
 .alert {
-  padding: 12px;
-  border-radius: 5px;
-  margin-bottom: 20px;
-  font-size: 14px;
+  padding: 0.9rem 1.2rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .alert-success {
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  color: #155724;
+  background: #1a2a1a;
+  color: #4caf50;
+  border: 1px solid #2a3a2a;
 }
 
 .alert-error {
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  color: #721c24;
+  background: #2a1a1a;
+  color: #e53935;
+  border: 1px solid #3a2a2a;
 }
 
-/* Form group */
+/* ============================================ */
+/* FORM GROUP */
+/* ============================================ */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.2rem;
 }
 
-label {
+.form-group label {
   display: block;
-  margin-bottom: 8px;
-  color: #555;
+  color: #888888;
+  font-size: 0.85rem;
   font-weight: 500;
-  font-size: 14px;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.3px;
 }
 
-/* Input polja */
-input[type="text"],
-input[type="email"],
-input[type="password"] {
+.form-group input {
   width: 100%;
-  padding: 12px 15px;
-  border: 2px solid #e0e0e0;
-  border-radius: 5px;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  padding: 0.75rem 1rem;
+  background: #222222;
+  border: 1.5px solid #2a2a2a;
+  border-radius: 8px;
+  color: #eeeeee;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
-input:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+.form-group input::placeholder {
+  color: #444444;
 }
 
-/* TAMNO CRVENA BOJA ZA LOZINKU - PO SPECIFIKACIJI! */
-input.password-input {
-  color: darkred;
+.form-group input:focus {
+  outline: none;
+  border-color: #e53935;
+  background: #252525;
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+}
+
+.form-group input.invalid {
+  border-color: #e53935;
+  background: #221a1a;
+}
+
+/* ============================================ */
+/* ERROR TEXT */
+/* ============================================ */
+.error-text {
+  color: #e53935;
+  font-size: 0.8rem;
+  margin-top: 0.4rem;
   font-weight: 500;
 }
 
-input.password-input::placeholder {
-  color: #999;
-  font-weight: normal;
-}
-
-/* Invalid polja */
-input.invalid {
-  border-color: #dc3545;
-}
-
-input.invalid:focus {
-  border-color: #dc3545;
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
-}
-
-/* Error tekst */
-.error-text {
-  color: #dc3545;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-/* Submit dugme */
+/* ============================================ */
+/* SUBMIT BUTTON */
+/* ============================================ */
 .btn-submit {
   width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0.85rem;
+  background: #e53935;
   color: white;
   border: none;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 8px;
+  font-size: 1rem;
   font-weight: 600;
+  font-family: 'Poppins', sans-serif;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 10px;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+  letter-spacing: 0.3px;
 }
 
 .btn-submit:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  background: #c62828;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(229, 57, 53, 0.35);
 }
 
 .btn-submit:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* Login link */
+/* ============================================ */
+/* LOGIN LINK */
+/* ============================================ */
 .login-link {
   text-align: center;
-  margin-top: 20px;
-  font-size: 14px;
-  color: #666;
+  margin-top: 1.5rem;
+  color: #555555;
+  font-size: 0.9rem;
 }
 
 .login-link a {
-  color: #667eea;
+  color: #e53935;
   text-decoration: none;
   font-weight: 600;
+  transition: color 0.2s ease;
 }
 
 .login-link a:hover {
+  color: #ff6659;
   text-decoration: underline;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
+/* ============================================ */
+/* RESPONSIVE */
+/* ============================================ */
+@media (max-width: 576px) {
   .register-card {
-    padding: 25px;
+    padding: 28px 20px;
   }
 
-  h2 {
-    font-size: 24px;
+  .register-card h2 {
+    font-size: 1.5rem;
   }
 }

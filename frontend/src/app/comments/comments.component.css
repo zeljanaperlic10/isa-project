@@ -1,63 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
 /* ============================================ */
 /* COMMENTS SECTION */
 /* ============================================ */
 .comments-section {
   margin-top: 2rem;
-  background: white;
+  background: #1a1a1a;
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid #242424;
 }
 
 .comments-header {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid #222222;
 }
 
 .comments-header h2 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #333;
+  color: #eeeeee;
   margin: 0;
 }
 
 /* ============================================ */
-/* COMMENT FORM (samo registrovani - 3.6) */
+/* COMMENT FORM */
 /* ============================================ */
 .comment-form {
-  background: #f8f9ff;
-  border-radius: 12px;
+  background: #222222;
+  border-radius: 10px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  border: 2px solid #e0e5ff;
+  border: 1px solid #2a2a2a;
 }
 
 .comment-form h3 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: #333;
+  color: #cccccc;
   margin: 0 0 1rem 0;
 }
 
 .comment-textarea {
   width: 100%;
   padding: 1rem;
-  border: 2px solid #ddd;
+  background: #2a2a2a;
+  border: 1.5px solid #333333;
   border-radius: 8px;
-  font-size: 1rem;
-  font-family: inherit;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  color: #eeeeee;
   resize: vertical;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.comment-textarea::placeholder {
+  color: #444444;
 }
 
 .comment-textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #e53935;
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
 }
 
 .comment-textarea:disabled {
-  background: #f5f5f5;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -70,24 +85,26 @@
 
 .char-count {
   font-size: 0.85rem;
-  color: #999;
+  color: #555555;
 }
 
 .btn-submit {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #e53935;
   color: white;
   border: none;
-  padding: 0.7rem 1.5rem;
+  padding: 0.65rem 1.5rem;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
+  font-family: 'Poppins', sans-serif;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .btn-submit:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  background: #c62828;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
 }
 
 .btn-submit:disabled {
@@ -97,11 +114,11 @@
 }
 
 /* ============================================ */
-/* LOGIN HINT (za neprijavljene ispod forme - 3.1) */
+/* LOGIN HINT */
 /* ============================================ */
 .login-hint {
-  background: #fff3cd;
-  border: 2px solid #ffc107;
+  background: #222222;
+  border: 1px solid #333333;
   border-radius: 8px;
   padding: 1rem;
   margin-top: 1rem;
@@ -110,20 +127,20 @@
 
 .login-hint p {
   margin: 0 0 0.8rem 0;
-  color: #856404;
+  color: #888888;
   font-size: 0.95rem;
 }
 
 .login-hint strong {
-  color: #856404;
+  color: #e53935;
 }
 
 /* ============================================ */
-/* LOGIN PROMPT (stari stil - više se ne koristi) */
+/* LOGIN PROMPT */
 /* ============================================ */
 .login-prompt {
-  background: #fff8e1;
-  border: 2px solid #ffd54f;
+  background: #222222;
+  border: 1px solid #333333;
   border-radius: 8px;
   padding: 1.5rem;
   text-align: center;
@@ -132,44 +149,43 @@
 
 .login-prompt p {
   margin: 0 0 1rem 0;
-  color: #666;
+  color: #888888;
   font-weight: 500;
 }
 
 .btn-login-link {
   display: inline-block;
-  background: #667eea;
+  background: #e53935;
   color: white;
   padding: 0.6rem 1.5rem;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .btn-login-link:hover {
-  background: #5568d3;
-  transform: translateY(-2px);
+  background: #c62828;
+  transform: translateY(-1px);
 }
 
 /* ============================================ */
 /* LOADING & ERROR */
 /* ============================================ */
-.loading,
-.error-message {
+.loading {
   text-align: center;
   padding: 2rem;
-  color: #666;
+  color: #666666;
 }
 
 .spinner {
   width: 40px;
   height: 40px;
   margin: 0 auto 1rem;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #667eea;
+  border: 4px solid #222222;
+  border-top: 4px solid #e53935;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
@@ -178,10 +194,12 @@
 }
 
 .error-message {
-  background: #ffebee;
-  border: 2px solid #ef5350;
+  text-align: center;
+  padding: 1.5rem;
+  background: #2a1a1a;
+  border: 1px solid #3a2a2a;
   border-radius: 8px;
-  color: #c62828;
+  color: #e53935;
 }
 
 /* ============================================ */
@@ -190,11 +208,11 @@
 .empty-state {
   text-align: center;
   padding: 3rem 2rem;
-  color: #999;
+  color: #444444;
 }
 
 .empty-state p {
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin: 0;
 }
 
@@ -211,22 +229,21 @@
 /* COMMENT CARD */
 /* ============================================ */
 .comment-card {
-  background: #fafafa;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
+  background: #222222;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
   padding: 1.2rem;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .comment-card:hover {
-  border-color: #c0c0c0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-color: #333333;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Svoj komentar - drugačija boja */
 .comment-card.own-comment {
-  background: #e8f4f8;
-  border-color: #81d4fa;
+  background: #1f1a1a;
+  border-color: #e53935;
 }
 
 .comment-header {
@@ -243,12 +260,12 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #e53935;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -265,13 +282,13 @@
 
 .username {
   font-weight: 600;
-  font-size: 1rem;
-  color: #333;
+  font-size: 0.95rem;
+  color: #eeeeee;
 }
 
 .date {
-  font-size: 0.85rem;
-  color: #999;
+  font-size: 0.8rem;
+  color: #555555;
 }
 
 /* ============================================ */
@@ -279,18 +296,18 @@
 /* ============================================ */
 .btn-delete {
   background: transparent;
-  border: 2px solid #e0e0e0;
+  border: 1px solid #333333;
   border-radius: 8px;
   padding: 0.4rem 0.8rem;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .btn-delete:hover {
-  background: #ffebee;
-  border-color: #ef5350;
-  transform: scale(1.1);
+  background: #2a1a1a;
+  border-color: #e53935;
+  transform: scale(1.05);
 }
 
 /* ============================================ */
@@ -302,51 +319,52 @@
 
 .comment-body p {
   margin: 0;
-  color: #333;
-  font-size: 1rem;
+  color: #cccccc;
+  font-size: 0.95rem;
   line-height: 1.6;
   word-wrap: break-word;
   white-space: pre-wrap;
 }
 
 /* ============================================ */
-/* LOAD MORE BUTTON (paginacija - 3.6) */
+/* LOAD MORE */
 /* ============================================ */
 .load-more-container {
   text-align: center;
   margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 2px solid #f0f0f0;
+  border-top: 1px solid #222222;
 }
 
 .btn-load-more {
-  background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
-  padding: 0.8rem 2rem;
+  background: transparent;
+  color: #e53935;
+  border: 1.5px solid #e53935;
+  padding: 0.75rem 2rem;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
+  font-family: 'Poppins', sans-serif;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .btn-load-more:hover:not(:disabled) {
-  background: #667eea;
+  background: #e53935;
   color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
 }
 
 .btn-load-more:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .pagination-info {
   margin-top: 1rem;
-  color: #999;
-  font-size: 0.9rem;
+  color: #444444;
+  font-size: 0.85rem;
 }
 
 /* ============================================ */
@@ -354,7 +372,7 @@
 /* ============================================ */
 @media (max-width: 768px) {
   .comments-section {
-    padding: 1.5rem;
+    padding: 1.2rem;
   }
 
   .comment-form {
